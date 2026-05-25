@@ -1,4 +1,8 @@
-![MagbumOpus](/.tar/LawOfCrystallization.png)
+![Title](/.tar/LawOfCrystallization.png)
+<figure>
+  <img src="/.tar/LawOfCrystallization.png" alt="MagbumOpus">
+  <figcaption>A scientific visualization of crystalline structures aligning under thermodynamic equilibrium.</figcaption>
+</figure>
 
 # __Abstract:__ The Aetheric Synthesis of Reality Through the Arc-Length Axiom
 
