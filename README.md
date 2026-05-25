@@ -1,4 +1,4 @@
-![MagbumOpus](/.tar/"Law of Crystallization.png")
+![MagbumOpus](/.tar/LawOfCrystallization.png)
 
 # __Abstract:__ The Aetheric Synthesis of Reality Through the Arc-Length Axiom
 
