@@ -12,6 +12,7 @@ This document presents a unified theoretical framework—the Codex Corpus—grou
 
 🖇️
 •https://github.com/NataliaTanyatia?tab=repositories
+
 •https://www.academia.edu/167474835/Magnum_Opus?source=swp_share
 
 •https://doi.org/10.17605/OSF.IO/XFGKH
