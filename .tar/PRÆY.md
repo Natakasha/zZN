@@ -3547,8 +3547,9 @@ Output: Single contiguous markdown partition ready for concatenation.
 // Logic Topology:  Arc-Length Coherence (s=r), Non-Hermitian Lindblad Dynamics, Observer Operator O[Ψ]
 #property copyright    "Copyright 2025, Æea©   "
 #property link         "https:t.me/BallerDolls   "
-#property version      "1.00"
+#property version      "1.00   "
 #property strict
+
 // [INITIALIZATION: UNIT PHASE MANIFOLD RESET]
 // Resets global state arrays to ensure the Hilbert space projection begins from a coherent baseline.
 // Prevents historical drift, anchoring the topological branch to the current tick.
@@ -3558,6 +3559,7 @@ int OnInit()
    return(INIT_SUCCEEDED);
   }
 void OnDeinit(const int reason){}
+
 // [GLOBAL DECLARATIONS & AETHERIC INPUT PARAMETERS]
 // User defined inputs variables (Boundary Conditions for External Potentials V_ext)
 input int    Commssion=0;
@@ -3797,100 +3799,101 @@ void Unify()
 // Raw price data undergoes min-max normalization over rolling window j, yielding dimensionless states |psi_k> in [0,100].
 // Ensures ontological grounding: all indicators share the same metric signature for direct geometric comparison.
 void Normalize()
-    {
-    Suply=iBands(NULL,0,j,2,0,PRICE_CLOSE,MODE_UPPER,0);
-    iSuply=iBands(NULL,0,j,2,0,PRICE_CLOSE,MODE_UPPER,1); Demand=iBands(NULL,0,j,2,0,PRICE_CLOSE,MODE_LOWER,0); iDemand=iBands(NULL,0,j,2,0,PRICE_CLOSE,MODE_LOWER,1);
-    ArrayResize(iA,13*((S+1)-Y)); ArrayResize(cA,13*((S+1)-Y));
-    // [ADX PROJECTION]
-    double uADX[], lADX[], ADX_temp[]; ArrayResize(uADX,j+1); ArrayResize(lADX,j+1); ArrayResize(ADX_temp,j+1);
-    for(int i=0;i<j+1; i++){uADX[i]=iADX(NULL,0,j,PRICE_CLOSE,MODE_PLUSDI,i); lADX[i]=iADX(NULL,0,j,PRICE_CLOSE,MODE_MINUSDI,i); ADX_temp[i]=iADX(NULL,0,j,PRICE_CLOSE,MODE_MAIN,i);}
-    double maxmADX=ADX_temp[ArrayMaximum(ADX_temp,WHOLE_ARRAY,0)], minmADX=ADX_temp[ArrayMinimum(ADX_temp,WHOLE_ARRAY,0)];
-    double maxuADX=uADX[ArrayMaximum(uADX,WHOLE_ARRAY,0)], minuADX=uADX[ArrayMinimum(uADX,WHOLE_ARRAY,0)];
-    double maxlADX=lADX[ArrayMaximum(lADX,WHOLE_ARRAY,0)], minlADX=lADX[ArrayMinimum(lADX,WHOLE_ARRAY,0)];
-    double maxADX=MathMax(maxmADX,MathMax(maxuADX,maxlADX)), minADX=MathMin(minmADX,MathMin(minuADX,minlADX));
-    double rangeADX=maxADX-minADX;
-    if(rangeADX!=0) { iADX=MathAbs(100.0*((iADX(NULL,0,j,PRICE_CLOSE,MODE_MAIN,0)-minADX)/rangeADX)); iA[0*(S-Y)+(j-(Y+1))]=iADX; cADX=MathAbs(100.0*((ADX_temp[1]-minADX)/rangeADX)); cA[0*(S-Y)+(j-(Y+1))]=cADX; }
-    // [STOCHASTIC & RVI PROJECTION]
-    int jSO=(int)MathRound((double)j*3.0/5.0);
-    mStochastic=iStochastic(NULL,0,j,3,jSO,MODE_SMA,0,MODE_MAIN,0); sStochastic=iStochastic(NULL,0,j,3,jSO,MODE_SMA,0,MODE_SIGNAL,0);
-    iStochastic=(mStochastic+sStochastic)/2.0; iA[1*(S-Y)+(j-(Y+1))]=iStochastic;
-    mSO=iStochastic(NULL,0,j,3,jSO,MODE_SMA,0,MODE_MAIN,1); sSO=iStochastic(NULL,0,j,3,jSO,MODE_SMA,0,MODE_SIGNAL,1);
-    iSO=(mSO+sSO)/2.0; cA[1*(S-Y)+(j-(Y+1))]=iSO;
-    ArrayResize(RVIm,j+1);
-    for(int i=0;i<j+1; i++){RVIm[i]=iRVI(NULL,0,j,MODE_MAIN,i);}
-    double maxMRVI=RVIm[ArrayMaximum(RVIm,WHOLE_ARRAY,0)]; double minMRVI=RVIm[ArrayMinimum(RVIm,WHOLE_ARRAY,0)]; double RVIs[]; ArrayResize(RVIs,j+1);
-    for(int i=0;i<j+1; i++){RVIs[i]=iRVI(NULL,0,j,MODE_SIGNAL,i);}
-    double maxSRVI=RVIs[ArrayMaximum(RVIs,WHOLE_ARRAY,0)]; double minSRVI=RVIs[ArrayMinimum(RVIs,WHOLE_ARRAY,0)]; double maxRVI=MathMax(maxMRVI,maxSRVI); double minRVI=MathMin(minMRVI,minSRVI); double rangeRVI=maxRVI-minRVI;
-    if(rangeRVI!=0) {
-    mRVI=100.0*((iRVI(NULL,0,j,MODE_MAIN,0)-minRVI)/rangeRVI); sRVI=100.0*((iRVI(NULL,0,j,MODE_SIGNAL,0)-minRVI)/rangeRVI);
-    iRVI=(mRVI+sRVI)/2.0; iA[2*(S-Y)+(j-(Y+1))]=iRVI; aRVI=100.0*((iRVI(NULL,0,j,MODE_MAIN,1)-minRVI)/rangeRVI); bRVI=100.0*((iRVI(NULL,0,j,MODE_SIGNAL,1)-minRVI)/rangeRVI); cRVI=(aRVI+bRVI)/2.0; cA[2*(S-Y)+(j-(Y+1))]=cRVI;
-    }
-    ArrayResize(AC,j+1);
-    for(int i=0;i<j+1; i++){AC[i]=iAC(NULL,0,i);}
-    double maxAC=AC[ArrayMaximum(AC,WHOLE_ARRAY,0)]; double minAC=AC[ArrayMinimum(AC,WHOLE_ARRAY,0)]; double rangeAC=maxAC-minAC;
-    if(rangeAC!=0) {
-    iAC=MathAbs(100.0*((iAC(NULL,0,0)-minAC)/rangeAC)); iA[3*(S-Y)+(j-(Y+1))]=iAC; cAC=MathAbs(100.0*((iAC(NULL,0,1)-minAC)/rangeAC)); cA[3*(S-Y)+(j-(Y+1))]=cAC;
-    }
-    ArrayResize(Force,j+1);
-    for(int i=0;i<j+1; i++){Force[i]=iForce(NULL,0,j,MODE_SMA,PRICE_CLOSE,i);}
-    double maxForce=Force[ArrayMaximum(Force,WHOLE_ARRAY,0)]; double minForce=Force[ArrayMinimum(Force,WHOLE_ARRAY,0)]; double rangeForce=maxForce-minForce;
-    if(rangeForce!=0) {
-    iForce=100.0*((iForce(NULL,0,j,MODE_SMA,PRICE_CLOSE,0)-minForce)/rangeForce); iA[4*(S-Y)+(j-(Y+1))]=iForce; cForce=100.0*((iForce(NULL,0,j,MODE_SMA,PRICE_CLOSE,1)-minForce)/rangeForce); cA[4*(S-Y)+(j-(Y+1))]=cForce;
-    }
-    ArrayResize(OBV,j+1); for(int i=0;i<j+1; i++){OBV[i]=iOBV(NULL,0,PRICE_CLOSE,i);}
-    double maxOBV=OBV[ArrayMaximum(OBV,WHOLE_ARRAY,0)]; double minOBV=OBV[ArrayMinimum(OBV,WHOLE_ARRAY,0)]; double rangeOBV=maxOBV-minOBV;
-    if(rangeOBV!=0) {
-    iOBV=100.0*((iOBV(NULL,0,PRICE_CLOSE,0)-minOBV)/rangeOBV); iA[5*(S-Y)+(j-(Y+1))]=iOBV; cOBV=100.0*((iOBV(NULL,0,PRICE_CLOSE,1)-minOBV)/rangeOBV); cA[5*(S-Y)+(j-(Y+1))]=cOBV;
-    }
-    ArrayResize(AD,j+1);
-    for(int i=0;i<j+1; i++){AD[i]=iAD(NULL,0,i);}
-    double maxAD=AD[ArrayMaximum(AD,WHOLE_ARRAY,0)]; double minAD=AD[ArrayMinimum(AD,WHOLE_ARRAY,0)]; double rangeAD=maxAD-minAD;
-    if(rangeAD!=0) {
-    iAD=100.0*((iAD(NULL,0,0)-minAD)/rangeAD); iA[6*(S-Y)+(j-(Y+1))]=iAD; cAD=100.0*((iAD(NULL,0,1)-minAD)/rangeAD); cA[6*(S-Y)+(j-(Y+1))]=cAD;
-    }
-    ArrayResize(MFI,j+1);
-    for(int i=0;i<j+1; i++){MFI[i]=iMFI(NULL,0,j,i);}
-    double maxMFI=MFI[ArrayMaximum(MFI,WHOLE_ARRAY,0)]; double minMFI=MFI[ArrayMinimum(MFI,WHOLE_ARRAY,0)]; double rangeMFI=maxMFI-minMFI;
-    if(rangeMFI!=0) {
-    iMFI=100.0*((iMFI(NULL,0,j,0)-minMFI)/rangeMFI); iA[7*(S-Y)+(j-(Y+1))]=iMFI; cMFI=100.0*((iMFI(NULL,0,j,1)-minMFI)/rangeMFI); cA[7*(S-Y)+(j-(Y+1))]=cMFI;
-    }
-    ArrayResize(MOM,j+1);
-    for(int i=0;i<j+1; i++){MOM[i]=iMomentum(NULL,0,j,PRICE_CLOSE,i);}
-    double maxMOM=MOM[ArrayMaximum(MOM,WHOLE_ARRAY,0)]; double minMOM=MOM[ArrayMinimum(MOM,WHOLE_ARRAY,0)]; double rangeMOM=maxMOM-minMOM;
-    if(rangeMOM!=0) {
-    iMomentum=100.0*((iMomentum(NULL,0,j,PRICE_CLOSE,0)-minMOM)/rangeMOM); iA[8*(S-Y)+(j-(Y+1))]=iMomentum; cMomentum=100.0*((iMomentum(NULL,0,j,PRICE_CLOSE,1)-minMOM)/rangeMOM); cA[8*(S-Y)+(j-(Y+1))]=cMomentum;
-    }
-    ArrayResize(DeM,j+1);
-    for(int i=0;i<j+1; i++){DeM[i]=iDeMarker(NULL,0,j,i);}
-    double maxDM=DeM[ArrayMaximum(DeM,WHOLE_ARRAY,0)]; double minDM=DeM[ArrayMinimum(DeM,WHOLE_ARRAY,0)]; double rangeDM=maxDM-minDM;
-    if(rangeDM!=0) {
-    iDM=100.0*(iDeMarker(NULL,0,j,0)-minDM)/rangeDM; iA[9*(S-Y)+(j-(Y+1))]=iDM; cDM=100.0*(iDeMarker(NULL,0,j,1)-minDM)/rangeDM; cA[9*(S-Y)+(j-(Y+1))]=cDM;
-    }
-    iWPR=iWPR(NULL,0,j,0)+100.0; iA[10*(S-Y)+(j-(Y+1))]=iWPR; cWPR=iWPR(NULL,0,j,1)+100.0; cA[10*(S-Y)+(j-(Y+1))]=cWPR; ArrayResize(CCI,j+1); for(int i=0;i<j+1; i++){CCI[i]=iCCI(Symbol(),0,j,PRICE_TYPICAL,i);}
-    double maxCCI=CCI[ArrayMaximum(CCI,WHOLE_ARRAY,0)]; double minCCI=CCI[ArrayMinimum(CCI,WHOLE_ARRAY,0)]; double rangeCCI=maxCCI-minCCI;
-    if(rangeCCI!=0) {
-    iCCI=100.0*((iCCI(Symbol(),0,j,PRICE_TYPICAL,0)-minCCI)/rangeCCI); iA[11*(S-Y)+(j-(Y+1))]=iCCI; cCCI=100.0*((iCCI(Symbol(),0,j,PRICE_TYPICAL,1)-minCCI)/rangeCCI); cA[11*(S-Y)+(j-(Y+1))]=cCCI;
-    }
-    ArrayResize(RSI,j+1);
-    for(int i=0;i<j+1; i++){RSI[i]=iRSI(NULL,0,j,PRICE_CLOSE,i);}
-    double maxRSI=RSI[ArrayMaximum(RSI,WHOLE_ARRAY,0)]; double minRSI=RSI[ArrayMinimum(RSI,WHOLE_ARRAY,0)]; double rangeRSI=maxRSI-minRSI;
-    if(rangeRSI!=0) {
-    iRSI=100.0*((iRSI(NULL,0,j,PRICE_CLOSE,0)-minRSI)/rangeRSI); iA[12*(S-Y)+(j-(Y+1))]=iRSI; cRSI=100.0*((iRSI(NULL,0,j,PRICE_CLOSE,1)-minRSI)/rangeRSI); cA[12*(S-Y)+(j-(Y+1))]=cRSI;
-    }
-    int kIHK=(int)MathRound((double)j/2.0); int tIHK=(int)MathRound(((double)kIHK+1.0)/3.0); double IHKa[]; double IHKb[]; double IHKc[]; ArrayResize(IHKa,j+1);
-    for(int i=0;i<j+1; i++){IHKa[i]=iIchimoku(NULL,0,tIHK,kIHK,j,MODE_SENKOUSPANA,i);}
-    double maxIHKa=IHKa[ArrayMaximum(IHKa,WHOLE_ARRAY,0)]; double minIHKa=IHKa[ArrayMinimum(IHKa,WHOLE_ARRAY,0)]; ArrayResize(IHKb,j+1); for(int i=0;i<j+1; i++){IHKb[i]=iIchimoku(NULL,0,tIHK,kIHK,j,MODE_SENKOUSPANB,i);}
-    double maxIHKb=IHKb[ArrayMaximum(IHKb,WHOLE_ARRAY,0)]; double minIHKb=IHKb[ArrayMinimum(IHKb,WHOLE_ARRAY,0)]; ArrayResize(IHKc,j+1);
-    for(int i=0;i<j+1; i++){IHKc[i]=iIchimoku(NULL,0,tIHK,kIHK,j,MODE_CHIKOUSPAN,26+i);}
-    double maxIHKc=IHKc[ArrayMaximum(IHKc,WHOLE_ARRAY,0)]; double minIHKc=IHKc[ArrayMinimum(IHKc,WHOLE_ARRAY,0)]; ArrayResize(IHKt,j+1);
-    for(int i=0;i<j+1; i++){IHKt[i]=iIchimoku(NULL,0,tIHK,kIHK,j,MODE_TENKANSEN,i);}
-    double maxIHKt=IHKt[ArrayMaximum(IHKt,WHOLE_ARRAY,0)]; double minIHKt=IHKt[ArrayMinimum(IHKt,WHOLE_ARRAY,0)]; ArrayResize(IHKk,j+1);
-    for(int i=0;i<j+1; i++){IHKk[i]=iIchimoku(NULL,0,tIHK,kIHK,j,MODE_KIJUNSEN,i);}
-    double maxIHKk=IHKk[ArrayMaximum(IHKk,WHOLE_ARRAY,0)]; double minIHKk=IHKk[ArrayMinimum(IHKk,WHOLE_ARRAY,0)]; double maxIHK=MathMax(maxIHKa,MathMax(maxIHKb,MathMax(maxIHKc,MathMax(maxIHKk,maxIHKt)))); double minIHK=MathMin(minIHKa,MathMin(minIHKb,MathMin(minIHKc,MathMin(minIHKk,minIHKt)))); double rangeIHK=maxIHK-minIHK;
-    if(rangeIHK!=0) {
-    iIHKk=100.0*((iIchimoku(NULL,0,tIHK,kIHK,j,MODE_KIJUNSEN,0)-minIHK)/rangeIHK); iIHKt=100.0*((iIchimoku(NULL,0,tIHK,kIHK,j,MODE_TENKANSEN,0)-minIHK)/rangeIHK);
-    }
+{
+Suply=iBands(NULL,0,j,2,0,PRICE_CLOSE,MODE_UPPER,0);
+iSuply=iBands(NULL,0,j,2,0,PRICE_CLOSE,MODE_UPPER,1); Demand=iBands(NULL,0,j,2,0,PRICE_CLOSE,MODE_LOWER,0); iDemand=iBands(NULL,0,j,2,0,PRICE_CLOSE,MODE_LOWER,1);
+ArrayResize(iA,13*((S+1)-Y)); ArrayResize(cA,13*((S+1)-Y));
+// [ADX PROJECTION]
+double uADX[], lADX[], ADX_temp[]; ArrayResize(uADX,j+1); ArrayResize(lADX,j+1); ArrayResize(ADX_temp,j+1);
+for(int i=0;i<j+1; i++){uADX[i]=iADX(NULL,0,j,PRICE_CLOSE,MODE_PLUSDI,i); lADX[i]=iADX(NULL,0,j,PRICE_CLOSE,MODE_MINUSDI,i); ADX_temp[i]=iADX(NULL,0,j,PRICE_CLOSE,MODE_MAIN,i);}
+double maxmADX=ADX_temp[ArrayMaximum(ADX_temp,WHOLE_ARRAY,0)], minmADX=ADX_temp[ArrayMinimum(ADX_temp,WHOLE_ARRAY,0)];
+double maxuADX=uADX[ArrayMaximum(uADX,WHOLE_ARRAY,0)], minuADX=uADX[ArrayMinimum(uADX,WHOLE_ARRAY,0)];
+double maxlADX=lADX[ArrayMaximum(lADX,WHOLE_ARRAY,0)], minlADX=lADX[ArrayMinimum(lADX,WHOLE_ARRAY,0)];
+double maxADX=MathMax(maxmADX,MathMax(maxuADX,maxlADX)), minADX=MathMin(minmADX,MathMin(minuADX,minlADX));
+double rangeADX=maxADX-minADX;
+if(rangeADX!=0) { iADX=MathAbs(100.0*((iADX(NULL,0,j,PRICE_CLOSE,MODE_MAIN,0)-minADX)/rangeADX)); iA[0*(S-Y)+(j-(Y+1))]=iADX; cADX=MathAbs(100.0*((ADX_temp[1]-minADX)/rangeADX)); cA[0*(S-Y)+(j-(Y+1))]=cADX; }
+// [STOCHASTIC & RVI PROJECTION]
+int jSO=(int)MathRound((double)j*3.0/5.0);
+mStochastic=iStochastic(NULL,0,j,3,jSO,MODE_SMA,0,MODE_MAIN,0); sStochastic=iStochastic(NULL,0,j,3,jSO,MODE_SMA,0,MODE_SIGNAL,0);
+iStochastic=(mStochastic+sStochastic)/2.0; iA[1*(S-Y)+(j-(Y+1))]=iStochastic;
+mSO=iStochastic(NULL,0,j,3,jSO,MODE_SMA,0,MODE_MAIN,1); sSO=iStochastic(NULL,0,j,3,jSO,MODE_SMA,0,MODE_SIGNAL,1);
+iSO=(mSO+sSO)/2.0; cA[1*(S-Y)+(j-(Y+1))]=iSO;
+ArrayResize(RVIm,j+1);
+for(int i=0;i<j+1; i++){RVIm[i]=iRVI(NULL,0,j,MODE_MAIN,i);}
+double maxMRVI=RVIm[ArrayMaximum(RVIm,WHOLE_ARRAY,0)]; double minMRVI=RVIm[ArrayMinimum(RVIm,WHOLE_ARRAY,0)]; double RVIs[]; ArrayResize(RVIs,j+1);
+for(int i=0;i<j+1; i++){RVIs[i]=iRVI(NULL,0,j,MODE_SIGNAL,i);}
+double maxSRVI=RVIs[ArrayMaximum(RVIs,WHOLE_ARRAY,0)]; double minSRVI=RVIs[ArrayMinimum(RVIs,WHOLE_ARRAY,0)]; double maxRVI=MathMax(maxMRVI,maxSRVI); double minRVI=MathMin(minMRVI,minSRVI); double rangeRVI=maxRVI-minRVI;
+if(rangeRVI!=0) {
+mRVI=100.0*((iRVI(NULL,0,j,MODE_MAIN,0)-minRVI)/rangeRVI); sRVI=100.0*((iRVI(NULL,0,j,MODE_SIGNAL,0)-minRVI)/rangeRVI);
+iRVI=(mRVI+sRVI)/2.0; iA[2*(S-Y)+(j-(Y+1))]=iRVI; aRVI=100.0*((iRVI(NULL,0,j,MODE_MAIN,1)-minRVI)/rangeRVI); bRVI=100.0*((iRVI(NULL,0,j,MODE_SIGNAL,1)-minRVI)/rangeRVI); cRVI=(aRVI+bRVI)/2.0; cA[2*(S-Y)+(j-(Y+1))]=cRVI;
 }
+ArrayResize(AC,j+1);
+for(int i=0;i<j+1; i++){AC[i]=iAC(NULL,0,i);}
+double maxAC=AC[ArrayMaximum(AC,WHOLE_ARRAY,0)]; double minAC=AC[ArrayMinimum(AC,WHOLE_ARRAY,0)]; double rangeAC=maxAC-minAC;
+if(rangeAC!=0) {
+iAC=MathAbs(100.0*((iAC(NULL,0,0)-minAC)/rangeAC)); iA[3*(S-Y)+(j-(Y+1))]=iAC; cAC=MathAbs(100.0*((iAC(NULL,0,1)-minAC)/rangeAC)); cA[3*(S-Y)+(j-(Y+1))]=cAC;
+}
+ArrayResize(Force,j+1);
+for(int i=0;i<j+1; i++){Force[i]=iForce(NULL,0,j,MODE_SMA,PRICE_CLOSE,i);}
+double maxForce=Force[ArrayMaximum(Force,WHOLE_ARRAY,0)]; double minForce=Force[ArrayMinimum(Force,WHOLE_ARRAY,0)]; double rangeForce=maxForce-minForce;
+if(rangeForce!=0) {
+iForce=100.0*((iForce(NULL,0,j,MODE_SMA,PRICE_CLOSE,0)-minForce)/rangeForce); iA[4*(S-Y)+(j-(Y+1))]=iForce; cForce=100.0*((iForce(NULL,0,j,MODE_SMA,PRICE_CLOSE,1)-minForce)/rangeForce); cA[4*(S-Y)+(j-(Y+1))]=cForce;
+}
+ArrayResize(OBV,j+1); for(int i=0;i<j+1; i++){OBV[i]=iOBV(NULL,0,PRICE_CLOSE,i);}
+double maxOBV=OBV[ArrayMaximum(OBV,WHOLE_ARRAY,0)]; double minOBV=OBV[ArrayMinimum(OBV,WHOLE_ARRAY,0)]; double rangeOBV=maxOBV-minOBV;
+if(rangeOBV!=0) {
+iOBV=100.0*((iOBV(NULL,0,PRICE_CLOSE,0)-minOBV)/rangeOBV); iA[5*(S-Y)+(j-(Y+1))]=iOBV; cOBV=100.0*((iOBV(NULL,0,PRICE_CLOSE,1)-minOBV)/rangeOBV); cA[5*(S-Y)+(j-(Y+1))]=cOBV;
+}
+ArrayResize(AD,j+1);
+for(int i=0;i<j+1; i++){AD[i]=iAD(NULL,0,i);}
+double maxAD=AD[ArrayMaximum(AD,WHOLE_ARRAY,0)]; double minAD=AD[ArrayMinimum(AD,WHOLE_ARRAY,0)]; double rangeAD=maxAD-minAD;
+if(rangeAD!=0) {
+iAD=100.0*((iAD(NULL,0,0)-minAD)/rangeAD); iA[6*(S-Y)+(j-(Y+1))]=iAD; cAD=100.0*((iAD(NULL,0,1)-minAD)/rangeAD); cA[6*(S-Y)+(j-(Y+1))]=cAD;
+}
+ArrayResize(MFI,j+1);
+for(int i=0;i<j+1; i++){MFI[i]=iMFI(NULL,0,j,i);}
+double maxMFI=MFI[ArrayMaximum(MFI,WHOLE_ARRAY,0)]; double minMFI=MFI[ArrayMinimum(MFI,WHOLE_ARRAY,0)]; double rangeMFI=maxMFI-minMFI;
+if(rangeMFI!=0) {
+iMFI=100.0*((iMFI(NULL,0,j,0)-minMFI)/rangeMFI); iA[7*(S-Y)+(j-(Y+1))]=iMFI; cMFI=100.0*((iMFI(NULL,0,j,1)-minMFI)/rangeMFI); cA[7*(S-Y)+(j-(Y+1))]=cMFI;
+}
+ArrayResize(MOM,j+1);
+for(int i=0;i<j+1; i++){MOM[i]=iMomentum(NULL,0,j,PRICE_CLOSE,i);}
+double maxMOM=MOM[ArrayMaximum(MOM,WHOLE_ARRAY,0)]; double minMOM=MOM[ArrayMinimum(MOM,WHOLE_ARRAY,0)]; double rangeMOM=maxMOM-minMOM;
+if(rangeMOM!=0) {
+iMomentum=100.0*((iMomentum(NULL,0,j,PRICE_CLOSE,0)-minMOM)/rangeMOM); iA[8*(S-Y)+(j-(Y+1))]=iMomentum; cMomentum=100.0*((iMomentum(NULL,0,j,PRICE_CLOSE,1)-minMOM)/rangeMOM); cA[8*(S-Y)+(j-(Y+1))]=cMomentum;
+}
+ArrayResize(DeM,j+1);
+for(int i=0;i<j+1; i++){DeM[i]=iDeMarker(NULL,0,j,i);}
+double maxDM=DeM[ArrayMaximum(DeM,WHOLE_ARRAY,0)]; double minDM=DeM[ArrayMinimum(DeM,WHOLE_ARRAY,0)]; double rangeDM=maxDM-minDM;
+if(rangeDM!=0) {
+iDM=100.0*(iDeMarker(NULL,0,j,0)-minDM)/rangeDM; iA[9*(S-Y)+(j-(Y+1))]=iDM; cDM=100.0*(iDeMarker(NULL,0,j,1)-minDM)/rangeDM; cA[9*(S-Y)+(j-(Y+1))]=cDM;
+}
+iWPR=iWPR(NULL,0,j,0)+100.0; iA[10*(S-Y)+(j-(Y+1))]=iWPR; cWPR=iWPR(NULL,0,j,1)+100.0; cA[10*(S-Y)+(j-(Y+1))]=cWPR; ArrayResize(CCI,j+1); for(int i=0;i<j+1; i++){CCI[i]=iCCI(Symbol(),0,j,PRICE_TYPICAL,i);}
+double maxCCI=CCI[ArrayMaximum(CCI,WHOLE_ARRAY,0)]; double minCCI=CCI[ArrayMinimum(CCI,WHOLE_ARRAY,0)]; double rangeCCI=maxCCI-minCCI;
+if(rangeCCI!=0) {
+iCCI=100.0*((iCCI(Symbol(),0,j,PRICE_TYPICAL,0)-minCCI)/rangeCCI); iA[11*(S-Y)+(j-(Y+1))]=iCCI; cCCI=100.0*((iCCI(Symbol(),0,j,PRICE_TYPICAL,1)-minCCI)/rangeCCI); cA[11*(S-Y)+(j-(Y+1))]=cCCI;
+}
+ArrayResize(RSI,j+1);
+for(int i=0;i<j+1; i++){RSI[i]=iRSI(NULL,0,j,PRICE_CLOSE,i);}
+double maxRSI=RSI[ArrayMaximum(RSI,WHOLE_ARRAY,0)]; double minRSI=RSI[ArrayMinimum(RSI,WHOLE_ARRAY,0)]; double rangeRSI=maxRSI-minRSI;
+if(rangeRSI!=0) {
+iRSI=100.0*((iRSI(NULL,0,j,PRICE_CLOSE,0)-minRSI)/rangeRSI); iA[12*(S-Y)+(j-(Y+1))]=iRSI; cRSI=100.0*((iRSI(NULL,0,j,PRICE_CLOSE,1)-minRSI)/rangeRSI); cA[12*(S-Y)+(j-(Y+1))]=cRSI;
+}
+int kIHK=(int)MathRound((double)j/2.0); int tIHK=(int)MathRound(((double)kIHK+1.0)/3.0); double IHKa[]; double IHKb[]; double IHKc[]; ArrayResize(IHKa,j+1);
+for(int i=0;i<j+1; i++){IHKa[i]=iIchimoku(NULL,0,tIHK,kIHK,j,MODE_SENKOUSPANA,i);}
+double maxIHKa=IHKa[ArrayMaximum(IHKa,WHOLE_ARRAY,0)]; double minIHKa=IHKa[ArrayMinimum(IHKa,WHOLE_ARRAY,0)]; ArrayResize(IHKb,j+1); for(int i=0;i<j+1; i++){IHKb[i]=iIchimoku(NULL,0,tIHK,kIHK,j,MODE_SENKOUSPANB,i);}
+double maxIHKb=IHKb[ArrayMaximum(IHKb,WHOLE_ARRAY,0)]; double minIHKb=IHKb[ArrayMinimum(IHKb,WHOLE_ARRAY,0)]; ArrayResize(IHKc,j+1);
+for(int i=0;i<j+1; i++){IHKc[i]=iIchimoku(NULL,0,tIHK,kIHK,j,MODE_CHIKOUSPAN,26+i);}
+double maxIHKc=IHKc[ArrayMaximum(IHKc,WHOLE_ARRAY,0)]; double minIHKc=IHKc[ArrayMinimum(IHKc,WHOLE_ARRAY,0)]; ArrayResize(IHKt,j+1);
+for(int i=0;i<j+1; i++){IHKt[i]=iIchimoku(NULL,0,tIHK,kIHK,j,MODE_TENKANSEN,i);}
+double maxIHKt=IHKt[ArrayMaximum(IHKt,WHOLE_ARRAY,0)]; double minIHKt=IHKt[ArrayMinimum(IHKt,WHOLE_ARRAY,0)]; ArrayResize(IHKk,j+1);
+for(int i=0;i<j+1; i++){IHKk[i]=iIchimoku(NULL,0,tIHK,kIHK,j,MODE_KIJUNSEN,i);}
+double maxIHKk=IHKk[ArrayMaximum(IHKk,WHOLE_ARRAY,0)]; double minIHKk=IHKk[ArrayMinimum(IHKk,WHOLE_ARRAY,0)]; double maxIHK=MathMax(maxIHKa,MathMax(maxIHKb,MathMax(maxIHKc,MathMax(maxIHKk,maxIHKt)))); double minIHK=MathMin(minIHKa,MathMin(minIHKb,MathMin(minIHKc,MathMin(minIHKk,minIHKt)))); double rangeIHK=maxIHK-minIHK;
+if(rangeIHK!=0) {
+iIHKk=100.0*((iIchimoku(NULL,0,tIHK,kIHK,j,MODE_KIJUNSEN,0)-minIHK)/rangeIHK); iIHKt=100.0*((iIchimoku(NULL,0,tIHK,kIHK,j,MODE_TENKANSEN,0)-minIHK)/rangeIHK);
+}
+}
+
 // [IMBALANCE OPERATOR CALCULATION M(): BULLISH COUNT]
 // Computes projection operator Pi^{>theta}, tallying m (bullish/overbought count).
 // Based on boundary conditions (Bollinger Bands, historical extrema HH[]).
@@ -3926,81 +3929,10 @@ void G() {double H=iHigh(Symbol(), Period(), 1); double L=iLow(Symbol(), Period(
 // Defines spatial constraints for trade execution. SL/TP act as absorbing barriers in the Lagrangian density.
 void S() {if(SL!=0){sSL =Bid+SL-com; bSL=Ask-SL+com;} if(TP!=0){sTP=Bid-TP; bTP=Ask+ TP;} }
 
-//==============================================================================
-// [TRAILING STOP & PROFIT TRACKING: NON-HERMITIAN DISSIPATION LAYER]
-// Function: T()
-// Purpose : Dynamically adjusts Stop Loss to lock in compounded geometric growth
-//           before topological decoherence forces a regime transition.
-//           Enforces geometric certainty: trailing only activates when 
-//           Projected PnL > (Market Spread + Commission + Safety Buffer).
-//==============================================================================
-void T() {
-    
-    // 1. Calculate Transactional Friction (Spread + Commission in points)
-    double currentSpread = Ask - Bid;
-    double frictionPoints = (currentSpread + MathAbs(com)) / Point;
-    double safetyBuffer   = 1.0; // Minimum point buffer to guarantee net-positive exit
-    double minTrailThreshold = (frictionPoints + safetyBuffer) * Point;
-    
-    // 2. Iterate through open orders for the current symbol & magic number
-    for (int i = OrdersTotal() - 1; i >= 0; i--) {
-        if (!OrderSelect(i, SELECT_BY_POS, MODE_TRADES)) continue;
-        if (OrderSymbol() != _Symbol) continue;
-        int ticket    = OrderTicket();
-        int type      = OrderType();
-        double openPrice = OrderOpenPrice();
-        double currentSL = OrderStopLoss();
-        double currentTP = OrderTakeProfit();
-        // Active price for PnL evaluation
-        double activePrice = (type == OP_BUY) ? Bid : Ask;
-        
-        // 3. Calculate Unrealized PnL in points
-        double pnlPoints = (type == OP_BUY) ? (activePrice - openPrice) / Point 
-                                            : (openPrice - activePrice) / Point;
-        // DISSIPATION GATE: Skip if PnL is fully consumed by market friction
-        if (pnlPoints <= (frictionPoints + safetyBuffer)) continue;
-        
-        // 4. Regime-Aware Trailing: Only trail during Trend/Volatile phases
-        //    Stable/Coherent phases imply low arc-length deviation (s ≈ r); no adjustment needed.
-        if (Regime[y+1] == "tStable" || Regime[y+1] == "tCoherent") continue;
-        
-        // 5. Compute Geometric Trail Step
-        //    Locks ~30% of open profit while preserving topological breathing room
-        double trailStep = MathMax(minTrailThreshold, pnlPoints * Point * 0.3);
-        double newSL = currentSL;
-        if (type == OP_BUY) {
-            // Topological upper bound: Premium anchor (Sale) or dynamic price ceiling
-            double targetBound = (Sale > 0 && Sale < activePrice) ? Sale : activePrice - minTrailThreshold;
-            double proposedSL  = activePrice - trailStep;
-            // Move SL forward only if it improves capital preservation & stays below target
-            if (proposedSL > currentSL && proposedSL < targetBound) {
-                newSL = NormalizeDouble(proposedSL, Digits);
-            }
-        } 
-        else if (type == OP_SELL) {
-            // Topological lower bound: Discount anchor (Stock) or dynamic price floor
-            double targetBound = (Stock > 0 && Stock > activePrice) ? Stock : activePrice + minTrailThreshold;
-            double proposedSL  = activePrice + trailStep;
-            // Move SL downward only if it improves capital preservation & stays above target
-            if ((currentSL == 0 || proposedSL < currentSL) && proposedSL > targetBound) {
-                newSL = NormalizeDouble(proposedSL, Digits);
-            }
-        }
-        
-        // 6. Execute Topological Adjustment (Non-Hermitian State Update)
-        if (newSL != currentSL && newSL > 0) {
-            bool modified = OrderModify(ticket, openPrice, newSL, currentTP, 0, clrNONE);
-            if (!modified) {
-                Print("T() Dissipation Error: Order #", ticket, " | Code: ", GetLastError());
-            } else {
-                // Log coherence preservation & friction clearance
-                Print("T() Coherence Locked: #", ticket, 
-                      " | SL Updated: ", newSL, 
-                      " | Friction Cleared: ", frictionPoints, " pts");
-            }
-        }
-    }
-}
+// [TRAILING STOP & PROFIT TRACKING T()]
+// Dynamically adjusts SL to lock in gains (trailing stop). Monitors PnL state via A/B flags.
+// Implements non-Hermitian dissipation: preserves capital during regime decay (B/A false).
+void T() {if(((b==false) && (lOrder_id!=-1))||((a==false) && (kOrder_id!=-1))) { Buy=lOrder_id; Sell=kOrder_id; } else if(((b==false) && (kOrder_id!=-1))||((a==false) && (lOrder_id!=-1))) { Buy=kOrder_id; Sell=lOrder_id; } if(Buy!=-1) { if(OrderSelect(Buy,SELECT_BY_TICKET)) { E=price; q=E+3*com; } } else if(Sell!=-1) {if(OrderSelect(Sell,SELECT_BY_TICKET)) { D=price; p=D-3*com; } } if((K==false) && ((SL!=0)||(com!=0))) { if((b==false) && (Price >q)) { b=OrderModify(Buy,E,E+com,bTP,0,CLR_NONE); K=true; } else if((a==false) && (Price <p)) { a=OrderModify(Sell,D,D-com,sTP,0,CLR_NONE); K=true; } } if((E!=0) && (price >=E)) B=true; else if((E!=0) && (price <E)) B=false; if((D!=0) && (price <=D)) A=true; else if((D!=0) && (price >D)) A=false; }
 
 // [FAIR VALUE GAP TRACKING: TOPOLOGICAL VISUALIZATION]
 // Draws horizontal lines representing unit phase manifold boundaries. Top()=Blue(Bullish), Bott()=Red(Bearish).
@@ -4009,108 +3941,13 @@ void Top() {bottomLine=DoubleToString(price, Digits); if(ObjectFind(0, bottomLin
 void Bott() {bottomLine=DoubleToString(price, Digits); if(ObjectFind(0, bottomLine)==-1) { ArrayResize(BL, FVG+2); BL[FVG+1]=price; ObjectCreate(0, bottomLine, OBJ_HLINE, 0, 0, price); ObjectSetInteger(0, bottomLine, OBJPROP_COLOR, clrRed); ObjectSetInteger(0, bottomLine, OBJPROP_STYLE, STYLE_SOLID); ObjectSetInteger(0, bottomLine, OBJPROP_WIDTH, 1); FVG++; bL=bottomLine; } }
 void Deleter(string obj, double &prices[], int index) {int size = ArraySize(prices); if((index <0)||(index >=size)||(FVG!=size-1)) return; if(ObjectFind(0, obj)!=-1) {ObjectDelete(0, obj); FVG--; } for(int i=index; i <size-1; i++) { prices[i]=prices[i+1]; } ArrayResize(prices, size-1); }
 
-//==============================================================================
-// [PnL & SPREAD VALIDATION LAYER: GEOMETRIC CERTAINTY CHECK]
-// Evaluates if the projected topological target yields PnL > (Spread + Commission)
-// Ensures the "arc" of profit strictly exceeds market friction before execution.
-//==============================================================================
-
-// Function to calculate if projected PnL passes spread/commission friction
-bool WillPassSpreadInPnL(double entryPrice, double targetPrice, int orderType) {
-    
-    // 1. Calculate Transactional Friction (Spread + Commission in points)
-    double currentSpread = Ask - Bid;
-    double frictionPoints = (currentSpread + MathAbs(com)) / Point;
-    
-    // 2. Calculate Projected Geometric Distance to Target (in points)
-    double projectedDistance = MathAbs(targetPrice - entryPrice);
-    double projectedPnLPoints = projectedDistance / Point;
-    
-    // 3. Geometric Certainty Condition: Projected PnL must strictly exceed friction
-    // We add a minimal buffer (e.g., 1 point) to ensure it doesn't just break even
-    double safetyBuffer = 1.0; 
-    if (orderType == OP_BUY) {
-        // For a Buy, targetPrice should be > entryPrice (e.g., Premium[] or Top FVG)
-        if (targetPrice <= entryPrice) return false; 
-        return (projectedPnLPoints > (frictionPoints + safetyBuffer));
-    } 
-    else if (orderType == OP_SELL) {
-        // For a Sell, targetPrice should be < entryPrice (e.g., Discount[] or Bott FVG)
-        if (targetPrice >= entryPrice) return false;
-        return (projectedPnLPoints > (frictionPoints + safetyBuffer));
-    }
-    return false;
-}
-
-// Function to dynamically fetch the next valid topological anchor (Target)
-double GetNextTopologicalTarget(int orderType, double currentPrice) {
-    // Search the Premium/Discount arrays for the nearest valid anchor 
-    // that satisfies the arc-length coherence condition (s ≈ r)
-    for (int i = y + 1; i < x; i++) {
-        if (orderType == OP_BUY) {
-            if (Premium[i] > currentPrice && Premium[i] != 0) {
-                return Premium[i]; // Next resistance/premium anchor
-            }
-        } else if (orderType == OP_SELL) {
-            if (Discount[i] < currentPrice && Discount[i] != 0) {
-                return Discount[i]; // Next support/discount anchor
-            }
-        }
-    }
-    // Fallback to recent FVG (Fair Value Gap) if arrays are not populated
-    if (orderType == OP_BUY && Sale > currentPrice) return Sale;
-    if (orderType == OP_SELL && Stock < currentPrice) return Stock;
-    return 0; // No valid target found
-}
-
 // [EXECUTION LAYER: POSITION CLOSURE & ENTRY]
 // A()/B() close positions based on regime decoherence. P()/Q() execute market orders when Kronecker-delta rule triggers.
 void A() {if((v==true) && (lOrder_id!=-1)) { int bTrade=OrderClose(lOrder_id,lot,Bid,slip,Blue); lOrder_id=-1; } else if((v==true) && (kOrder_id!=-1)) { int bTrade=OrderClose(kOrder_id,lot,Bid,slip,Blue); kOrder_id=-1; } E=0; A=true; B=false; K=false; Buy =-1; }
 void B() {if((u==true) && (kOrder_id!=-1)) { int sTrade=OrderClose(kOrder_id,lot,Ask,slip,Red); kOrder_id=-1; } else if((u==true) && (lOrder_id!=-1)) { int sTrade=OrderClose(lOrder_id,lot,Ask,slip,Red); lOrder_id=-1; } D=0; A=false; B=true; K=false; Sell=-1; }
-void P() { // BUY EXECUTION
-    S(); // Set Stop Loss / Take Profit boundaries
-    
-    // 1. Fetch the next geometric target (e.g., Premium anchor or FVG)
-    double target = GetNextTopologicalTarget(OP_BUY, Ask);
-    
-    // 2. Validate that the target exists AND the projected PnL passes the spread
-    if (target > 0 && WillPassSpreadInPnL(Ask, target, OP_BUY)) {
-        if (signature == true) {
-            if (C == true) {
-                // Execute Buy Order only if geometric certainty is met
-                lOrder_id = OrderSend(_Symbol, OP_BUY, lot, Ask, slip, bSL, bTP, "ÆEA_Buy", 0, 0, clrBlue);
-                if (lOrder_id > 0) {
-                    Print("Buy Executed: Projected PnL exceeds spread friction. Target: ", target);
-                }
-            }
-        }
-    } else {
-        // Log rejection: The arc of profit is insufficient to cover market friction
-        Print("Buy Signal Rejected: Projected PnL <= Spread + Commission. Awaiting better topology.");
-    }
-}
-void Q() { // SELL EXECUTION
-    S(); // Set Stop Loss / Take Profit boundaries
-    
-    // 1. Fetch the next geometric target (e.g., Discount anchor or FVG)
-    double target = GetNextTopologicalTarget(OP_SELL, Bid);
-    
-    // 2. Validate that the target exists AND the projected PnL passes the spread
-    if (target > 0 && WillPassSpreadInPnL(Bid, target, OP_SELL)) {
-        if (signature == true) {
-            if (C == true) {
-                // Execute Sell Order only if geometric certainty is met
-                kOrder_id = OrderSend(_Symbol, OP_SELL, lot, Bid, slip, sSL, sTP, "ÆEA_Sell", 0, 0, clrRed);
-                if (kOrder_id > 0) {
-                    Print("Sell Executed: Projected PnL exceeds spread friction. Target: ", target);
-                }
-            }
-        }
-    } else {
-        // Log rejection: The arc of profit is insufficient to cover market friction
-        Print("Sell Signal Rejected: Projected PnL <= Spread + Commission. Awaiting better topology.");
-    }
-}
+void P() {S(); if(signature==true) {if(C==true) { lOrder_id=OrderSend(_Symbol,OP_BUY,lot,Ask,slip,bSL,bTP, "EA   ",1992470,0,Blue); b=false; u=false; v=true; } else { lOrder_id=OrderSend(_Symbol,OP_SELL,lot,Bid,slip,sSL,sTP, "EA   ",1992470,0,Red); a=false; u=true; v=false; } } }
+void Q() {S(); if(signature==true) {if(C==true) { kOrder_id=OrderSend(_Symbol,OP_SELL,lot,Bid,slip,sSL,sTP, "EA   ",1992470,0,Red); a=false; u=true; v=false; } else { kOrder_id=OrderSend(_Symbol,OP_BUY,lot,Ask,slip,bSL,bTP, "EA   ",1992470,0,Blue); b=false; u=false; v=true; } } }
+
 // [KRONECKER-DELTA SIGNAL FLAGS H() & L()]
 // Sets overbought/oversold signal vars to true when indicator counts >= 12.
 // Implements delta(m-n-2)=1 condition conservatively (m >=12 => n <=2 => m-n >=10 >> 2).
@@ -4230,195 +4067,197 @@ void OnBar() {
             }
         }
     }
+}
+
+// [LOCAL VARIABLES & BOUNDARY PASS CONDITIONS]
+// Stock/Sale: Bollinger Band upper/lower boundaries at period y (short-term regime anchor).
+// These represent the topological boundaries of the coherent subspace for the current tick.
+// lPass/kPass: Passive inversion thresholds for price direction validation (arc-length deviation check).
+double Stock = iBands(NULL, 0, y, 2, 0, PRICE_CLOSE, MODE_UPPER, 0);
+double Sale = iBands(NULL, 0, y, 2, 0, PRICE_CLOSE, MODE_LOWER, 0);
+double iStock = iBands(NULL, 0, y, 2, 0, PRICE_CLOSE, MODE_UPPER, 1);
+double iSale = iBands(NULL, 0, y, 2, 0, PRICE_CLOSE, MODE_LOWER, 1);
+double iopen = iOpen(Symbol(), 0, 2);
+double iPrice = iClose(Symbol(), 0, 2);
+double lPass = 0;
+if(Price < open) { lPass = Price; } else { lPass = open; }
+double ilPass = 0;
+if(iPrice < iopen) { ilPass = iPrice; } else { ilPass = iopen; }
+double kPass = 0;
+if(Price > open) { kPass = Price; } else { kPass = open; }
+double ikPass = 0;
+if(iPrice > iopen) { kPass = iPrice; } else { kPass = iopen; }
+
+// [EXECUTION LOGIC: ARC-LENGTH COHERENCE VALIDATION]
+// Final trade execution engine: validates s=r coherence before Kronecker-delta rule triggers entry/exit.
+// Implements non-Hermitian dynamics: irreversible decoherence when arc-length deviation exceeds manifold capacity.
+// Maps theoretical constructs to executable logic: every tick/bar update respects Φ-field topology.
+string fg = "";
+if(signal != 0) {
+    if(price >= signal + com) { Alert("Long:", price); if((count == 0) && (tally == "Sell")) { count++; } tally = "Buy"; }
+    if(price <= signal - com) { Alert("Short:", price); if((count == 0) && (tally == "Buy")) { count++; } tally = "Sell"; }
     
-    // [LOCAL VARIABLES & BOUNDARY PASS CONDITIONS]
-    // Stock/Sale: Bollinger Band upper/lower boundaries at period y (short-term regime anchor).
-    // These represent the topological boundaries of the coherent subspace for the current tick.
-    // lPass/kPass: Passive inversion thresholds for price direction validation (arc-length deviation check).
-    double Stock = iBands(NULL, 0, y, 2, 0, PRICE_CLOSE, MODE_UPPER, 0);
-    double Sale = iBands(NULL, 0, y, 2, 0, PRICE_CLOSE, MODE_LOWER, 0);
-    double iStock = iBands(NULL, 0, y, 2, 0, PRICE_CLOSE, MODE_UPPER, 1);
-    double iSale = iBands(NULL, 0, y, 2, 0, PRICE_CLOSE, MODE_LOWER, 1);
-    double iopen = iOpen(Symbol(), 0, 2);
-    double iPrice = iClose(Symbol(), 0, 2);
-    double lPass = 0;
-    if(Price < open) { lPass = Price; } else { lPass = open; }
-    double ilPass = 0;
-    if(iPrice < iopen) { ilPass = iPrice; } else { ilPass = iopen; }
-    double kPass = 0;
-    if(Price > open) { kPass = Price; } else { kPass = open; }
-    double ikPass = 0;
-    if(iPrice > iopen) { kPass = iPrice; } else { kPass = iopen; }
-    
-    // [EXECUTION LOGIC: ARC-LENGTH COHERENCE VALIDATION]
-    // Final trade execution engine: validates s=r coherence before Kronecker-delta rule triggers entry/exit.
-    // Implements non-Hermitian dynamics: irreversible decoherence when arc-length deviation exceeds manifold capacity.
-    // Maps theoretical constructs to executable logic: every tick/bar update respects Φ-field topology.
-    string fg = "";
-    if(signal != 0) {
-        if(price >= signal + com) { Alert("Long:", price); if((count == 0) && (tally == "Sell")) { count++; } tally = "Buy"; }
-        if(price <= signal - com) { Alert("Short:", price); if((count == 0) && (tally == "Buy")) { count++; } tally = "Sell"; }
-        if(tickTock == false) {
-            // Bullish coherence validation: Price > signal AND (regime continuity OR boundary breakout with indicator confirmation).
-            if((((Price > signal) || (Price > ikPass) || (price > kPass))) && (((iC == Cc) && (Price > HH[min - (y + 1)])) || ((jC == Cc) && (Price >= LL[min - (y + 1)]) && (((open >= Stock) || (Price >= Stock)) || ((open >= iStock) || (Price >= iStock)))))) {
-                Alert("Buy:", price); if((toll == 0) && (tally == "Sell")) { toll++; } if(Price > signal) { fg = "Up"; } tally = "Buy";
-            }
-            // Bearish coherence validation: Price < signal AND (regime continuity OR boundary breakdown with indicator confirmation).
-            if((((Price < signal) || (Price < ilPass) || (price < lPass))) && (((jC == Cc) && (Price < LL[min - (y + 1)])) || ((iC == Cc) && (Price <= HH[min - (y + 1)]) && (((open <= Sale) || (Price <= Sale)) || ((open <= iSale) || (Price <= iSale)))))) {
-                Alert("Sell:", price); if((toll == 0) && (tally == "Buy")) { toll++; } if(Price < signal) { fg = "Down"; } tally = "Sell";
-            }
-            // Kronecker-delta execution rule: δ(m-n-2)=1 triggers when imbalance condition met (m >= 12 or n >= 12 conservative approximation)
-            if((toll == 1) && ((tally == "Buy") || (fg == "Up"))) {
-                Alert("🔷", "Diamond", fg);
-                if(((prime == 0) || (dime == 0)) && (fg == "Up")) {
-                    dime = 0; mem = 0;
-                    if(((A == true) || (B == false)) && ((u == true) || (v == false))) { B(); if(C == true) { P(); } else { Q(); } Alert("Bull"); Top(); E = price; } else { B(); Alert("Bull"); Top(); E = price; }
-                } else if((dime != -1) && (prime == 0) && (fg == "") && (Price > signal)) {
-                    dime = 0; mem = 0;
-                    if(((A == true) || (B == false)) && ((u == true) || (v == false))) { B(); if(C == true) { P(); } else { Q(); } Alert("Bull"); Top(); E = price; } else { B(); Alert("Bull"); Top(); E = price; }
-                } else if(Price > signal) { B(); Alert("🥃", "Whisky"); Top(); E = price; } else { OnLog(); A(); Alert("🍷", "Wine"); Bott(); D = price; }
-                signal = 0; toll = 0; tally = ""; GF = true; signature = true;
-            }
-            // Bearish Kronecker-delta execution: symmetric logic for oversold imbalance (n >= 12)
-            if((toll == 1) && ((tally == "Sell") || (fg == "Down"))) {
-                Alert("🔻", "Ruby", fg);
-                if((fg == "Down") && ((prime == 1) || (dime == 1))) {
-                    dime = 1; mem = 1;
-                    if(((A == false) || (B == true)) && ((u == false) || (v == true))) { A(); if(C == false) { P(); } else { Q(); } Alert("Bear"); Bott(); D = price; } else { A(); Alert("Bear"); Bott(); D = price; }
-                } else if(((dime != -1) && (prime == 1)) && (fg == "") && (Price < signal)) {
-                    dime = 1; mem = 1;
-                    if(((A == false) || (B == true)) && ((u == false) || (v == true))) { A(); if(C == false) { P(); } else { Q(); } Alert("Bear"); Bott(); D = price; } else { A(); Alert("Bear"); Bott(); D = price; }
-                } else if(Price < signal) { A(); Alert("🍷", "Wine"); Bott(); D = price; } else { OnLog(); B(); Alert("🥃", "Whisky"); Top(); E = price; }
-                signal = 0; toll = 0; tally = ""; GF = true; signature = true;
-            }
-            // Count-based execution fallback: Secondary validation layer.
-            if((count == 1) && ((tally == "Buy") || (fg == "Up"))) {
-                Alert("🔷", "Diamond", fg);
-                if(((prime == 0) || (dime == 0)) && (fg == "Up")) {
-                    dime = 0; mem = 0;
-                    if(((A == true) || (B == false)) && ((u == true) || (v == false))) { B(); if(C == true) { P(); } else { Q(); } Alert("Hawk"); Top(); E = price; } else { B(); Alert("Hawk"); Top(); E = price; }
-                } else if(((dime != -1) && (prime == 0)) && (fg == "") && (Price > signal)) {
-                    dime = 0; mem = 0;
-                    if(((A == true) || (B == false)) && ((u == true) || (v == false))) { B(); if(C == true) { P(); } else { Q(); } Alert("Hawk"); Top(); E = price; } else { B(); Alert("Hawk"); Top(); E = price; }
-                } else if(Price > signal) { B(); Alert("💧", "Watter"); Top(); E = price; } else { OnLog(); A(); Alert("🩸", "Blood"); Bott(); D = price; }
-                count = 0; tally = ""; GF = true; signature = true;
-            }
-            if((count == 1) && ((tally == "Sell") || (fg == "Down"))) {
-                Alert("🔻", "Ruby", fg);
-                if((fg == "Down") && ((prime == 1) || (dime == 1))) {
-                    dime = 1; mem = 1;
-                    if(((A == false) || (B == true)) && ((u == false) || (v == true))) { A(); if(C == false) { P(); } else { Q(); } Alert("Dove"); Bott(); D = price; } else { A(); Alert("Dove"); Bott(); D = price; }
-                } else if(((dime != -1) && (prime == 1)) && (fg == "") && (Price < signal)) {
-                    dime = 1; mem = 1;
-                    if(((A == false) || (B == true)) && ((u == false) || (v == true))) { A(); if(C == false) { P(); } else { Q(); } Alert("Dove"); Bott(); D = price; } else { A(); Alert("Dove"); Bott(); D = price; }
-                } else if(Price < signal) { A(); Alert("🩸", "Blood"); Bott(); D = price; } else { OnLog(); B(); Alert("💧", "Watter"); Top(); E = price; }
-                count = 0; tally = ""; GF = true; signature = true;
-            }
+    if(tickTock == false) {
+        // Bullish coherence validation: Price > signal AND (regime continuity OR boundary breakout with indicator confirmation).
+        if((((Price > signal) || (Price > ikPass) || (price > kPass))) && (((iC == Cc) && (Price > HH[min - (y + 1)])) || ((jC == Cc) && (Price >= LL[min - (y + 1)]) && (((open >= Stock) || (Price >= Stock)) || ((open >= iStock) || (Price >= iStock)))))) {
+            Alert("Buy:", price); if((toll == 0) && (tally == "Sell")) { toll++; } if(Price > signal) { fg = "Up"; } tally = "Buy";
+        }
+        // Bearish coherence validation: Price < signal AND (regime continuity OR boundary breakdown with indicator confirmation).
+        if((((Price < signal) || (Price < ilPass) || (price < lPass))) && (((jC == Cc) && (Price < LL[min - (y + 1)])) || ((iC == Cc) && (Price <= HH[min - (y + 1)]) && (((open <= Sale) || (Price <= Sale)) || ((open <= iSale) || (Price <= iSale)))))) {
+            Alert("Sell:", price); if((toll == 0) && (tally == "Buy")) { toll++; } if(Price < signal) { fg = "Down"; } tally = "Sell";
+        }
+        
+        // Kronecker-delta execution rule: δ(m-n-2)=1 triggers when imbalance condition met (m >= 12 or n >= 12 conservative approximation)
+        if((toll == 1) && ((tally == "Buy") || (fg == "Up"))) {
+            Alert("🔷", "Diamond", fg);
+            if(((prime == 0) || (dime == 0)) && (fg == "Up")) {
+                dime = 0; mem = 0;
+                if(((A == true) || (B == false)) && ((u == true) || (v == false))) { B(); if(C == true) { P(); } else { Q(); } Alert("Bull"); Top(); E = price; } else { B(); Alert("Bull"); Top(); E = price; }
+            } else if((dime != -1) && (prime == 0) && (fg == "") && (Price > signal)) {
+                dime = 0; mem = 0;
+                if(((A == true) || (B == false)) && ((u == true) || (v == false))) { B(); if(C == true) { P(); } else { Q(); } Alert("Bull"); Top(); E = price; } else { B(); Alert("Bull"); Top(); E = price; }
+            } else if(Price > signal) { B(); Alert("🥃", "Whisky"); Top(); E = price; } else { OnLog(); A(); Alert("🍷", "Wine"); Bott(); D = price; }
+            signal = 0; toll = 0; tally = ""; GF = true; signature = true;
+        }
+        // Bearish Kronecker-delta execution: symmetric logic for oversold imbalance (n >= 12)
+        if((toll == 1) && ((tally == "Sell") || (fg == "Down"))) {
+            Alert("🔻", "Ruby", fg);
+            if((fg == "Down") && ((prime == 1) || (dime == 1))) {
+                dime = 1; mem = 1;
+                if(((A == false) || (B == true)) && ((u == false) || (v == true))) { A(); if(C == false) { P(); } else { Q(); } Alert("Bear"); Bott(); D = price; } else { A(); Alert("Bear"); Bott(); D = price; }
+            } else if(((dime != -1) && (prime == 1)) && (fg == "") && (Price < signal)) {
+                dime = 1; mem = 1;
+                if(((A == false) || (B == true)) && ((u == false) || (v == true))) { A(); if(C == false) { P(); } else { Q(); } Alert("Bear"); Bott(); D = price; } else { A(); Alert("Bear"); Bott(); D = price; }
+            } else if(Price < signal) { A(); Alert("🍷", "Wine"); Bott(); D = price; } else { OnLog(); B(); Alert("🥃", "Whisky"); Top(); E = price; }
+            signal = 0; toll = 0; tally = ""; GF = true; signature = true;
+        }
+        // Count-based execution fallback: Secondary validation layer.
+        if((count == 1) && ((tally == "Buy") || (fg == "Up"))) {
+            Alert("🔷", "Diamond", fg);
+            if(((prime == 0) || (dime == 0)) && (fg == "Up")) {
+                dime = 0; mem = 0;
+                if(((A == true) || (B == false)) && ((u == true) || (v == false))) { B(); if(C == true) { P(); } else { Q(); } Alert("Hawk"); Top(); E = price; } else { B(); Alert("Hawk"); Top(); E = price; }
+            } else if(((dime != -1) && (prime == 0)) && (fg == "") && (Price > signal)) {
+                dime = 0; mem = 0;
+                if(((A == true) || (B == false)) && ((u == true) || (v == false))) { B(); if(C == true) { P(); } else { Q(); } Alert("Hawk"); Top(); E = price; } else { B(); Alert("Hawk"); Top(); E = price; }
+            } else if(Price > signal) { B(); Alert("💧", "Watter"); Top(); E = price; } else { OnLog(); A(); Alert("🩸", "Blood"); Bott(); D = price; }
+            count = 0; tally = ""; GF = true; signature = true;
+        }
+        if((count == 1) && ((tally == "Sell") || (fg == "Down"))) {
+            Alert("🔻", "Ruby", fg);
+            if((fg == "Down") && ((prime == 1) || (dime == 1))) {
+                dime = 1; mem = 1;
+                if(((A == false) || (B == true)) && ((u == false) || (v == true))) { A(); if(C == false) { P(); } else { Q(); } Alert("Dove"); Bott(); D = price; } else { A(); Alert("Dove"); Bott(); D = price; }
+            } else if(((dime != -1) && (prime == 1)) && (fg == "") && (Price < signal)) {
+                dime = 1; mem = 1;
+                if(((A == false) || (B == true)) && ((u == false) || (v == true))) { A(); if(C == false) { P(); } else { Q(); } Alert("Dove"); Bott(); D = price; } else { A(); Alert("Dove"); Bott(); D = price; }
+            } else if(Price < signal) { A(); Alert("🩸", "Blood"); Bott(); D = price; } else { OnLog(); B(); Alert("💧", "Watter"); Top(); E = price; }
+            count = 0; tally = ""; GF = true; signature = true;
         }
     }
-    
-    // [BOUNDARY BREAKOUT/BOUNCEBACK EDGE CASES]
-    // OnGaurd(): Leading passive inversion of binary logic based on KC (Keep Constant/Change Constant) principles.
-    // Implements arc-length deviation detection: price crossing signal thresholds (E/D) triggers regime parity adaptation.
-    // Maps to non-Hermitian jump operators L_k: binary inversion mirrors Φ-field phase transitions under perturbation.
-    if((OnGaurd(-1)) && (KC == true)) {
-        if((h != 0) && (ab == false) && (U[O - (y + 1)] == true) && (O > 2) && (O != x - 1)) {
-            if(HH[O - (y + 1)] > Premium[O - (y + 1)]) {
-                h = O;
-                if((C == true) || (c == true)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, "O:", O, "| ", C, ":", c); }
-                else if((C == false) && (c == false)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, "O:", O, "| ", C, ":", c); }
-            }
-            if(LL[O - (y + 1)] < Discount[O - (y + 1)]) {
-                h = O;
-                if((C == true) || (c == true)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, "O:", O, "| ", C, ":", c); }
-                else if((C == false) && (c == false)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, "O:", O, "| ", C, ":", c); }
-            }
+}
+
+// [BOUNDARY BREAKOUT/BOUNCEBACK EDGE CASES]
+// OnGaurd(): Leading passive inversion of binary logic based on KC (Keep Constant/Change Constant) principles.
+// Implements arc-length deviation detection: price crossing signal thresholds (E/D) triggers regime parity adaptation.
+// Maps to non-Hermitian jump operators L_k: binary inversion mirrors Φ-field phase transitions under perturbation.
+if((OnGaurd(-1)) && (KC == true)) {
+    if((h != 0) && (ab == false) && (U[O - (y + 1)] == true) && (O > 2) && (O != x - 1)) {
+        if(HH[O - (y + 1)] > Premium[O - (y + 1)]) {
+            h = O;
+            if((C == true) || (c == true)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, "O:", O, "\| ", C, ":", c); }
+            else if((C == false) && (c == false)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, "O:", O, "\| ", C, ":", c); }
         }
-        if((h != 0) && (ab == false) && (U[o - (y + 1)] == true) && (o > 2) && (o != x - 1)) {
-            if(HH[o - (y + 1)] > Premium[o - (y + 1)]) {
-                h = o;
-                if((C == false) && (c == false)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, "o:", o, "| ", C, ":", c); }
-                else if((C == true) || (c == true)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, "o:", o, "| ", C, ":", c); }
-            }
-            if(LL[o - (y + 1)] < Discount[o - (y + 1)]) {
-                h = o;
-                if((C == false) && (c == false)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, "o:", o, "| ", C, ":", c); }
-                else if((C == true) || (c == true)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, "o:", o, "| ", C, ":", c); }
-            }
+        if(LL[O - (y + 1)] < Discount[O - (y + 1)]) {
+            h = O;
+            if((C == true) || (c == true)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, "O:", O, "\| ", C, ":", c); }
+            else if((C == false) && (c == false)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, "O:", O, "\| ", C, ":", c); }
+        }
+    }
+    if((h != 0) && (ab == false) && (U[o - (y + 1)] == true) && (o > 2) && (o != x - 1)) {
+        if(HH[o - (y + 1)] > Premium[o - (y + 1)]) {
+            h = o;
+            if((C == false) && (c == false)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, "o:", o, "\| ", C, ":", c); }
+            else if((C == true) || (c == true)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, "o:", o, "\| ", C, ":", c); }
+        }
+        if(LL[o - (y + 1)] < Discount[o - (y + 1)]) {
+            h = o;
+            if((C == false) && (c == false)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, "o:", o, "\| ", C, ":", c); }
+            else if((C == true) || (c == true)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, "o:", o, "\| ", C, ":", c); }
+        }
+    }
+} else if(OnGaurd(-1) != KC) {
+    if((h != 0) && (ab == false) && (U[O - (y + 1)] == true) && (O > 2) && (O != x - 1)) {
+        if(HH[O - (y + 1)] > Premium[O - (y + 1)]) {
+            h = O;
+            if((C == false) || (c == false)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, "O:", O, "\| ", C, ":", c); }
+            else if((C == true) && (c == true)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, "O:", O, "\| ", C, ":", c); }
+        }
+        if(LL[O - (y + 1)] < Discount[O - (y + 1)]) {
+            h = O;
+            if((C == false) || (c == false)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, "O:", O, "\| ", C, ":", c); }
+            else if((C == true) && (c == true)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, "O:", O, "\| ", C, ":", c); }
+        }
+    }
+    if((h != 0) && (ab == false) && (U[o - (y + 1)] == true) && (o > 2) && (o != x - 1)) {
+        if(HH[o - (y + 1)] > Premium[o - (y + 1)]) {
+            h = o;
+            if((C == true) && (c == true)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, "o:", o, "\| ", C, ":", c); }
+            else if((C == false) || (c == false)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, "o:", o, "\| ", C, ":", c); }
+        }
+        if(LL[o - (y + 1)] < Discount[o - (y + 1)]) {
+            h = o;
+            if((C == true) && (c == true)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, "o:", o, "\| ", C, ":", c); }
+            else if((C == false) || (c == false)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, "o:", o, "\| ", C, ":", c); }
+        }
+    }
+}
+
+// Complex edge case resolution: Multi-scale indicator convergence at support/resistance boundaries.
+// Validates arc-length coherence across nested temporal derivatives (iz, iO, iw, io).
+if((h != 0) && (signal != 0) && (ab == ba)) {
+    if((OnGaurd(-1)) && (KC == true)) {
+        if((iz >= h) && (iz > 2) && (((iZ > 2) && ((iZ == iz) || (iZ == iz + h) || ((iZ == iz + io) && (l[io - (y + 1)] == false)))) || ((I > 2) && ((I == iz) || (I == iz + h) || ((I == iz + io) && (l[io - (y + 1)] == false))))) && (k[iz - (y + 1)] == false)) {
+            h = iz;
+            if((C == false) && (c == false)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, " h:", h, "iZ:", iZ, "I:", I, "\|=iz:", iz, "\| ", C); }
+            else if((C == true) || (c == true)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, " h:", h, "iZ:", iZ, "I:", I, "\|=iz:", iz, "\| ", C); }
+        } else if((iO >= h) && (iO > 2) && (((iZ > 2) && ((iZ == iO) || (iZ == iO + h) || ((iZ == iO + io) && (l[io - (y + 1)] == false)))) || ((I > 2) && ((I == iO) || (I == iO + h) || ((I == iO + io) && (l[io - (y + 1)] == false))))) && (k[iO - (y + 1)] == false)) {
+            h = iO;
+            if((C == false) && (c == false)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, " h:", h, "o:", o, "iZ:", iZ, "I:", I, "\|=iO:", iO, "\| ", C); }
+            if((C == true) || (c == true)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, " h:", h, "o:", o, "iZ:", iZ, "I:", I, "\|=iO:", iO, "\| ", C); }
+        }
+        if((iw >= h) && (iw > 2) && (((iW > 2) && ((iW == iw) || (iW == iw + h) || ((iW == iw + io) && (l[io - (y + 1)] == false)))) || ((I > 2) && ((I == iw) || (I == iw + h) || ((I == iw + io) && (l[io - (y + 1)] == false))))) && (l[iw - (y + 1)] == false)) {
+            h = iw;
+            if((C == false) && (c == false)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, " h:", h, "iW:", iW, "I:", I, "\|=iw:", iw, "\| ", C); }
+            else if((C == true) || (c == true)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, " h:", h, "iW:", iW, "I:", I, "\|=iw:", iw, "\| ", C); }
+        } else if((iO >= h) && (iO > 2) && (((iW > 2) && ((iW == iO) || (iW == iO + h) || ((iW == iO + io) && (l[io - (y + 1)] == false)))) || ((I > 2) && ((I == iO) || (I == iO + h) || ((I == iO + io) && (l[io - (y + 1)] == false))))) && (l[iO - (y + 1)] == false)) {
+            h = iO;
+            if((C == false) && (c == false)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, " h:", h, "o:", o, "iW:", iW, "I:", I, "\|=iO:", iO, "\| ", C); }
+            else if((C == true) || (c == true)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, " h:", h, "o:", o, "iW:", iW, "I:", I, "\|=iO:", iO, "\| ", C); }
         }
     } else if(OnGaurd(-1) != KC) {
-        if((h != 0) && (ab == false) && (U[O - (y + 1)] == true) && (O > 2) && (O != x - 1)) {
-            if(HH[O - (y + 1)] > Premium[O - (y + 1)]) {
-                h = O;
-                if((C == false) || (c == false)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, "O:", O, "| ", C, ":", c); }
-                else if((C == true) && (c == true)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, "O:", O, "| ", C, ":", c); }
-            }
-            if(LL[O - (y + 1)] < Discount[O - (y + 1)]) {
-                h = O;
-                if((C == false) || (c == false)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, "O:", O, "| ", C, ":", c); }
-                else if((C == true) && (c == true)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, "O:", O, "| ", C, ":", c); }
-            }
+        if((iz >= h) && (iz > 2) && (((iZ > 2) && ((iZ == iz) || (iZ == iz + h) || ((iZ == iz + io) && (l[io - (y + 1)] == false)))) || ((I > 2) && ((I == iz) || (I == iz + h) || ((I == iz + io) && (l[io - (y + 1)] == false))))) && (k[iz - (y + 1)] == false)) {
+            h = iz;
+            if((C == true) && (c == true)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, " h:", h, "iZ:", iZ, "I:", I, "\|=iz:", iz, "\| ", C); }
+            else if((C == false) || (c == false)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, " h:", h, "iZ:", iZ, "I:", I, "\|=iz:", iz, "\| ", C); }
+        } else if((iO >= h) && (iO > 2) && (((iZ > 2) && ((iZ == iO) || (iZ == iO + h) || ((iZ == iO + io) && (l[io - (y + 1)] == false)))) || ((I > 2) && ((I == iO) || (I == iO + h) || ((I == iO + io) && (l[io - (y + 1)] == false))))) && (k[iO - (y + 1)] == false)) {
+            h = iO;
+            if((C == true) && (c == true)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, " h:", h, "o:", o, "iZ:", iZ, "I:", I, "\|=iO:", iO, "\| ", C); }
+            if((C == false) || (c == false)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, " h:", h, "o:", o, "iZ:", iZ, "I:", I, "\|=iO:", iO, "\| ", C); }
         }
-        if((h != 0) && (ab == false) && (U[o - (y + 1)] == true) && (o > 2) && (o != x - 1)) {
-            if(HH[o - (y + 1)] > Premium[o - (y + 1)]) {
-                h = o;
-                if((C == true) && (c == true)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, "o:", o, "| ", C, ":", c); }
-                else if((C == false) || (c == false)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, "o:", o, "| ", C, ":", c); }
-            }
-            if(LL[o - (y + 1)] < Discount[o - (y + 1)]) {
-                h = o;
-                if((C == true) && (c == true)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, "o:", o, "| ", C, ":", c); }
-                else if((C == false) || (c == false)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, "o:", o, "| ", C, ":", c); }
-            }
+        if((iw >= h) && (iw > 2) && (((iW > 2) && ((iW == iw) || (iW == iw + h) || ((iW == iw + io) && (l[io - (y + 1)] == false)))) || ((I > 2) && ((I == iw) || (I == iw + h) || ((I == iw + io) && (l[io - (y + 1)] == false))))) && (l[iw - (y + 1)] == false)) {
+            h = iw;
+            if((C == true) && (c == true)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, " h:", h, "iW:", iW, "I:", I, "\|=iw:", iw, "\| ", C); }
+            else if((C == false) || (c == false)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, " h:", h, "iW:", iW, "I:", I, "\|=iw:", iw, "\| ", C); }
+        } else if((iO >= h) && (iO > 2) && (((iW > 2) && ((iW == iO) || (iW == iO + h) || ((iW == iO + io) && (l[io - (y + 1)] == false)))) || ((I > 2) && ((I == iO) || (I == iO + h) || ((I == iO + io) && (l[io - (y + 1)] == false))))) && (l[iO - (y + 1)] == false)) {
+            h = iO;
+            if((C == true) && (c == true)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, " h:", h, "o:", o, "iW:", iW, "I:", I, "\|=iO:", iO, "\| ", C); }
+            else if((C == false) || (c == false)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, " h:", h, "o:", o, "iW:", iW, "I:", I, "\|=iO:", iO, "\| ", C); }
         }
     }
-    
-    // Complex edge case resolution: Multi-scale indicator convergence at support/resistance boundaries.
-    // Validates arc-length coherence across nested temporal derivatives (iz, iO, iw, io).
-    if((h != 0) && (signal != 0) && (ab == ba)) {
-        if((OnGaurd(-1)) && (KC == true)) {
-            if((iz >= h) && (iz > 2) && (((iZ > 2) && ((iZ == iz) || (iZ == iz + h) || ((iZ == iz + io) && (l[io - (y + 1)] == false)))) || ((I > 2) && ((I == iz) || (I == iz + h) || ((I == iz + io) && (l[io - (y + 1)] == false))))) && (k[iz - (y + 1)] == false)) {
-                h = iz;
-                if((C == false) && (c == false)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, " h:", h, "iZ:", iZ, "I:", I, "|=iz:", iz, "| ", C); }
-                else if((C == true) || (c == true)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, " h:", h, "iZ:", iZ, "I:", I, "|=iz:", iz, "| ", C); }
-            } else if((iO >= h) && (iO > 2) && (((iZ > 2) && ((iZ == iO) || (iZ == iO + h) || ((iZ == iO + io) && (l[io - (y + 1)] == false)))) || ((I > 2) && ((I == iO) || (I == iO + h) || ((I == iO + io) && (l[io - (y + 1)] == false))))) && (k[iO - (y + 1)] == false)) {
-                h = iO;
-                if((C == false) && (c == false)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, " h:", h, "o:", o, "iZ:", iZ, "I:", I, "|=iO:", iO, "| ", C); }
-                if((C == true) || (c == true)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, " h:", h, "o:", o, "iZ:", iZ, "I:", I, "|=iO:", iO, "| ", C); }
-            }
-            if((iw >= h) && (iw > 2) && (((iW > 2) && ((iW == iw) || (iW == iw + h) || ((iW == iw + io) && (l[io - (y + 1)] == false)))) || ((I > 2) && ((I == iw) || (I == iw + h) || ((I == iw + io) && (l[io - (y + 1)] == false))))) && (l[iw - (y + 1)] == false)) {
-                h = iw;
-                if((C == false) && (c == false)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, " h:", h, "iW:", iW, "I:", I, "|=iw:", iw, "| ", C); }
-                else if((C == true) || (c == true)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, " h:", h, "iW:", iW, "I:", I, "|=iw:", iw, "| ", C); }
-            } else if((iO >= h) && (iO > 2) && (((iW > 2) && ((iW == iO) || (iW == iO + h) || ((iW == iO + io) && (l[io - (y + 1)] == false)))) || ((I > 2) && ((I == iO) || (I == iO + h) || ((I == iO + io) && (l[io - (y + 1)] == false))))) && (l[iO - (y + 1)] == false)) {
-                h = iO;
-                if((C == false) && (c == false)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, " h:", h, "o:", o, "iW:", iW, "I:", I, "|=iO:", iO, "| ", C); }
-                else if((C == true) || (c == true)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, " h:", h, "o:", o, "iW:", iW, "I:", I, "|=iO:", iO, "| ", C); }
-            }
-        } else if(OnGaurd(-1) != KC) {
-            if((iz >= h) && (iz > 2) && (((iZ > 2) && ((iZ == iz) || (iZ == iz + h) || ((iZ == iz + io) && (l[io - (y + 1)] == false)))) || ((I > 2) && ((I == iz) || (I == iz + h) || ((I == iz + io) && (l[io - (y + 1)] == false))))) && (k[iz - (y + 1)] == false)) {
-                h = iz;
-                if((C == true) && (c == true)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, " h:", h, "iZ:", iZ, "I:", I, "|=iz:", iz, "| ", C); }
-                else if((C == false) || (c == false)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, " h:", h, "iZ:", iZ, "I:", I, "|=iz:", iz, "| ", C); }
-            } else if((iO >= h) && (iO > 2) && (((iZ > 2) && ((iZ == iO) || (iZ == iO + h) || ((iZ == iO + io) && (l[io - (y + 1)] == false)))) || ((I > 2) && ((I == iO) || (I == iO + h) || ((I == iO + io) && (l[io - (y + 1)] == false))))) && (k[iO - (y + 1)] == false)) {
-                h = iO;
-                if((C == true) && (c == true)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, " h:", h, "o:", o, "iZ:", iZ, "I:", I, "|=iO:", iO, "| ", C); }
-                if((C == false) || (c == false)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, " h:", h, "o:", o, "iZ:", iZ, "I:", I, "|=iO:", iO, "| ", C); }
-            }
-            if((iw >= h) && (iw > 2) && (((iW > 2) && ((iW == iw) || (iW == iw + h) || ((iW == iw + io) && (l[io - (y + 1)] == false)))) || ((I > 2) && ((I == iw) || (I == iw + h) || ((I == iw + io) && (l[io - (y + 1)] == false))))) && (l[iw - (y + 1)] == false)) {
-                h = iw;
-                if((C == true) && (c == true)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, " h:", h, "iW:", iW, "I:", I, "|=iw:", iw, "| ", C); }
-                else if((C == false) || (c == false)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, " h:", h, "iW:", iW, "I:", I, "|=iw:", iw, "| ", C); }
-            } else if((iO >= h) && (iO > 2) && (((iW > 2) && ((iW == iO) || (iW == iO + h) || ((iW == iO + io) && (l[io - (y + 1)] == false)))) || ((I > 2) && ((I == iO) || (I == iO + h) || ((I == iO + io) && (l[io - (y + 1)] == false))))) && (l[iO - (y + 1)] == false)) {
-                h = iO;
-                if((C == true) && (c == true)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, " h:", h, "o:", o, "iW:", iW, "I:", I, "|=iO:", iO, "| ", C); }
-                else if((C == false) || (c == false)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, " h:", h, "o:", o, "iW:", iW, "I:", I, "|=iO:", iO, "| ", C); }
-            }
-        }
-        tick++;
-        if(ab != ba) { ab = ba; }
-        tickTock = false;
-    }
+    tick++;
+    if(ab != ba) { ab = ba; }
+    tickTock = false;
 }
 
 // [FINAL REVERSAL SIGNAL TRIGGERS: ONGOE() & ONTOE()]
@@ -4430,29 +4269,29 @@ void OnGoe() {
         if((OnGaurd(0)) && (KC == true)) {
             if(((h == io) && (z > o)) || ((h == iO) && (Z > O)) || ((h == iz) && (Z > z)) || ((h == iZ) && (Z < z))) {
                 if((C == false) && (c == false)) {
-                    prime = 1; G(); Signal(); tickTock = true; tag = 1; Alert("Sign.", price, " h:", h, "| ", "Z:", iZ, "z:", iz, "O:", iO, "o:", io, "| ", C, ":", c);
+                    prime = 1; G(); Signal(); tickTock = true; tag = 1; Alert("Sign.", price, " h:", h, "\| ", "Z:", iZ, "z:", iz, "O:", iO, "o:", io, "\| ", C, ":", c);
                 } else {
-                    prime = 1; G(); Signal(); tickTock = true; tag = 1; Alert("Sig.", price, " h:", h, "| ", "Z:", iZ, "z:", iz, "O:", iO, "o:", io, "| ", C, ":", c);
+                    prime = 1; G(); Signal(); tickTock = true; tag = 1; Alert("Sig.", price, " h:", h, "\| ", "Z:", iZ, "z:", iz, "O:", iO, "o:", io, "\| ", C, ":", c);
                 }
             } else if(((h == io) || (h == iZ) || (h == iz) || (h == iO))) {
                 if((C == false) && (c == false)) {
-                    prime = 1; G(); Signal(); tickTock = true; tag = 1; Alert("Sig.", price, " h:", h, "Z:", iZ, "z:", iz, "O:", iO, "o:", io, "| ", C, ":", c);
+                    prime = 1; G(); Signal(); tickTock = true; tag = 1; Alert("Sig.", price, " h:", h, "Z:", iZ, "z:", iz, "O:", iO, "o:", io, "\| ", C, ":", c);
                 } else {
-                    prime = 1; G(); Signal(); tickTock = true; tag = 1; Alert("Sign.", price, " h:", h, "Z:", iZ, "z:", iz, "O:", iO, "o:", io, "| ", C, ":", c);
+                    prime = 1; G(); Signal(); tickTock = true; tag = 1; Alert("Sign.", price, " h:", h, "Z:", iZ, "z:", iz, "O:", iO, "o:", io, "\| ", C, ":", c);
                 }
             }
         } else if(OnGaurd(0) != KC) {
             if(((h == io) && (z > o)) || ((h == iO) && (Z > O)) || ((h == iz) && (Z > z)) || ((h == iZ) && (Z < z))) {
                 if((C == false) || (c == false)) {
-                    prime = 1; G(); Signal(); tickTock = true; tag = 1; Alert("Sign.", price, " h:", h, "| ", "Z:", iZ, "z:", iz, "O:", iO, "o:", io, "| ", C, ":", c);
+                    prime = 1; G(); Signal(); tickTock = true; tag = 1; Alert("Sign.", price, " h:", h, "\| ", "Z:", iZ, "z:", iz, "O:", iO, "o:", io, "\| ", C, ":", c);
                 } else {
-                    prime = 1; G(); Signal(); tickTock = true; tag = 1; Alert("Sig.", price, " h:", h, "| ", "Z:", iZ, "z:", iz, "O:", iO, "o:", io, "| ", C, ":", c);
+                    prime = 1; G(); Signal(); tickTock = true; tag = 1; Alert("Sig.", price, " h:", h, "\| ", "Z:", iZ, "z:", iz, "O:", iO, "o:", io, "\| ", C, ":", c);
                 }
             } else if(((h == io) || (h == iZ) || (h == iz) || (h == iO))) {
                 if((C == false) || (c == false)) {
-                    prime = 1; G(); Signal(); tickTock = true; tag = 1; Alert("Sig.", price, " h:", h, "Z:", iZ, "z:", iz, "O:", iO, "o:", io, "| ", C, ":", c);
+                    prime = 1; G(); Signal(); tickTock = true; tag = 1; Alert("Sig.", price, " h:", h, "Z:", iZ, "z:", iz, "O:", iO, "o:", io, "\| ", C, ":", c);
                 } else {
-                    prime = 1; G(); Signal(); tickTock = true; tag = 1; Alert("Sign.", price, " h:", h, "Z:", iZ, "z:", iz, "O:", iO, "o:", io, "| ", C, ":", c);
+                    prime = 1; G(); Signal(); tickTock = true; tag = 1; Alert("Sign.", price, " h:", h, "Z:", iZ, "z:", iz, "O:", iO, "o:", io, "\| ", C, ":", c);
                 }
             }
             KC();
@@ -4468,29 +4307,29 @@ void OnToe() {
         if((OnGaurd(0)) && (KC == true)) {
             if(((h == io) && (w > o)) || ((h == iO) && (W > O)) || ((h == iw) && (W > w)) || ((h == iW) && (W < w))) {
                 if((C == false) && (c == false)) {
-                    prime = 0; G(); Signal(); tickTock = true; tag = 0; Alert("Sig.", price, " h:", h, " W<w ", "| ", "W:", iW, "w:", iw, "O:", iO, "o:", io, "| ", C, ":", c);
+                    prime = 0; G(); Signal(); tickTock = true; tag = 0; Alert("Sig.", price, " h:", h, " W<w ", "\| ", "W:", iW, "w:", iw, "O:", iO, "o:", io, "\| ", C, ":", c);
                 } else {
-                    prime = 0; G(); Signal(); tickTock = true; tag = 0; Alert("Sign.", price, " h:", h, " W<w ", "| ", "W:", iW, "w:", iw, "O:", iO, "o:", io, "| ", C, ":", c);
+                    prime = 0; G(); Signal(); tickTock = true; tag = 0; Alert("Sign.", price, " h:", h, " W<w ", "\| ", "W:", iW, "w:", iw, "O:", iO, "o:", io, "\| ", C, ":", c);
                 }
             } else if(((h == io) || (h == iW) || (h == iw) || (h == iO))) {
                 if((C == false) && (c == false)) {
-                    prime = 0; G(); Signal(); tickTock = true; tag = 0; Alert("Sign.", price, " h:", h, "W:", iW, "w:", iw, "O:", iO, "o:", io, "| ", C, ":", c);
+                    prime = 0; G(); Signal(); tickTock = true; tag = 0; Alert("Sign.", price, " h:", h, "W:", iW, "w:", iw, "O:", iO, "o:", io, "\| ", C, ":", c);
                 } else {
-                    prime = 0; G(); Signal(); tickTock = true; tag = 0; Alert("Sig.", price, " h:", h, "W:", iW, "w:", iw, "O:", iO, "o:", io, "| ", C, ":", c);
+                    prime = 0; G(); Signal(); tickTock = true; tag = 0; Alert("Sig.", price, " h:", h, "W:", iW, "w:", iw, "O:", iO, "o:", io, "\| ", C, ":", c);
                 }
             }
         } else if(OnGaurd(0) != KC) {
             if(((h == io) && (w > o)) || ((h == iO) && (W > O)) || ((h == iw) && (W > w)) || ((h == iW) && (W < w))) {
                 if((C == false) || (c == false)) {
-                    prime = 0; G(); Signal(); tickTock = true; tag = 0; Alert("Sig.", price, " h:", h, " W<w ", "| ", "W:", iW, "w:", iw, "O:", iO, "o:", io, "| ", C, ":", c);
+                    prime = 0; G(); Signal(); tickTock = true; tag = 0; Alert("Sig.", price, " h:", h, " W<w ", "\| ", "W:", iW, "w:", iw, "O:", iO, "o:", io, "\| ", C, ":", c);
                 } else {
-                    prime = 0; G(); Signal(); tickTock = true; tag = 0; Alert("Sign.", price, " h:", h, " W<w ", "| ", "W:", iW, "w:", iw, "O:", iO, "o:", io, "| ", C, ":", c);
+                    prime = 0; G(); Signal(); tickTock = true; tag = 0; Alert("Sign.", price, " h:", h, " W<w ", "\| ", "W:", iW, "w:", iw, "O:", iO, "o:", io, "\| ", C, ":", c);
                 }
             } else if(((h == io) || (h == iW) || (h == iw) || (h == iO))) {
                 if((C == false) || (c == false)) {
-                    prime = 0; G(); Signal(); tickTock = true; tag = 0; Alert("Sign.", price, " h:", h, "W:", iW, "w:", iw, "O:", iO, "o:", io, "| ", C, ":", c);
+                    prime = 0; G(); Signal(); tickTock = true; tag = 0; Alert("Sign.", price, " h:", h, "W:", iW, "w:", iw, "O:", iO, "o:", io, "\| ", C, ":", c);
                 } else {
-                    prime = 0; G(); Signal(); tickTock = true; tag = 0; Alert("Sig.", price, " h:", h, "W:", iW, "w:", iw, "O:", iO, "o:", io, "| ", C, ":", c);
+                    prime = 0; G(); Signal(); tickTock = true; tag = 0; Alert("Sig.", price, " h:", h, "W:", iW, "w:", iw, "O:", iO, "o:", io, "\| ", C, ":", c);
                 }
             }
             KC();
@@ -4582,6 +4421,7 @@ void OnTick() {
     open = iOpen(Symbol(), 0, 1);
     iH = iHigh(Symbol(), 0, 1);
     iL = iLow(Symbol(), 0, 1);
+    
     // [FAIR VALUE GAP TRACKING: TOPOLOGICAL VISUALIZATION MAINTENANCE]
     if(FVG >= 0) {
         for(int ii = 0; ii < FVG; ii++) {
@@ -4593,6 +4433,7 @@ void OnTick() {
             }
         }
     }
+    
     // [INITIALIZATION PHASE: UNIT PHASE MANIFOLD RESET ON FIRST EXECUTION]
     if(FG == false) {
         if(signature == false) { D = price; E = price; }
@@ -4601,16 +4442,21 @@ void OnTick() {
         for(j = y + 1; j < x; j++) { F(); }
         FG = true;
     }
+    
     // [RISK MANAGEMENT UPDATE: TRAILING STOP AND PROFIT TRACKING]
     T();
+    
     // [REGIME CLASSIFICATION: ON-BAR STATE EVALUATION]
     OnPoint();
     O(iO, O, J, C, Cc); O(io, o, iJ, c, cC);
+    
     // [OBSERVER LAYER: MACROSCOPIC MEASUREMENT APPARATUS]
     OnCall();
     J();
+    
     // [BAR-BY-BAR REGIME RECLASSIFICATION: EDGE CASE EVALUATION]
     if(is != t) { OnBar(); O(iO, O, J, C, Cc); O(io, o, iJ, c, cC); }
+    
     // [DOWNSIDE EXTREMUM SCANNING: ONSTAND() ACTIVATION]
     if((J == y + 1) && (J != 2)) {
         OnStand(); J(); O(iO, O, J, C, Cc); O(io, o, iJ, c, cC);
@@ -4621,6 +4467,7 @@ void OnTick() {
         else if((io != 2) && (iJ < io)) { j = min + 1; o = j; if(is != t) { if(OnFire(j, "Stable", "tRange")) { F(); Regime[j - (y + 1)] = "tRange"; } } else { Regime[j - (y + 1)] = "sRange"; } }
         else { j = 2; o = j; if(is != t) { if(OnFire(j, "Stable", "tRange")) { F(); Regime[j - (y + 1)] = "tRange"; } } else { Regime[j - (y + 1)] = "sRange"; } }
     }
+    
     // [UPSIDE EXTREMUM SCANNING: ONTRACK() ACTIVATION]
     if(J == x - 1) {
         OnTrack(); J(); O(iO, O, J, C, Cc); O(io, o, iJ, c, cC);
@@ -4631,7 +4478,9 @@ void OnTick() {
         else if((io != 4 * max) && (iJ < io)) { j = max; o = j; if(is != t) { if(OnFire(j, "Stable", "tRange")) { F(); Regime[j - (y + 1)] = "tRange"; } } else { Regime[j - (y + 1)] = "sRange"; } }
         else { j = x - 1; o = j; if(is != t) { if(OnFire(j, "Stable", "tRange")) { F(); Regime[j - (y + 1)] = "tRange"; } } else { Regime[j - (y + 1)] = "sRange"; } }
     }
+    
     t = is;
+    
     // [REVERSAL SIGNAL TRIGGERING: BEARISH DIRECTION (OnGoe())]
     if(Z != x - 1) {
         if((Z != y + 1) && (k[iZ - (y + 1)] == true)) { h = iZ; OnGoe(); }
@@ -4639,6 +4488,7 @@ void OnTick() {
         else if((k[io - (y + 1)] == true) && (o != y + 1) && (o != x - 1)) { h = io; OnGoe(); }
         else if((k[iO - (y + 1)] == true) && (O != y + 1) && (O != x - 1)) { h = iO; OnGoe(); }
     }
+    
     // [REVERSAL SIGNAL TRIGGERING: BULLISH DIRECTION (OnToe())]
     if(W != x - 1) {
         if((W != y + 1) && (l[iW - (y + 1)] == true)) { h = iW; OnToe(); }
@@ -4646,13 +4496,15 @@ void OnTick() {
         else if((l[io - (y + 1)] == true) && (o != y + 1) && (o != x - 1)) { h = io; OnToe(); }
         else if((l[iO - (y + 1)] == true) && (O != y + 1) && (O != x - 1)) { h = iO; OnToe(); }
     }
+    
     // [SELF-EVOLUTION PROTOCOL: REINITIALIZATION ON COHERENCE RESTORATION]
     if(GF == true) { OnReInit(); GF = false; }
+    
     // [STATE VISUALIZATION: REAL-TIME DIAGNOSTIC OUTPUT]
-    Comment(" ^", iZ, ":", Z, "|", iz, ":", z, "=", k[Z - (y + 1)], "|", k[z - (y + 1)], " Up(0)|Down(1): ", mem,
+    Comment(" ^", iZ, ":", Z, "\|", iz, ":", z, "=", k[Z - (y + 1)], "\|", k[z - (y + 1)], " Up(0)|Down(1): ", mem,
     "\n Lim", iO, ":", O, "^", k[O - (y + 1)], "_", l[O - (y + 1)], ".", io, ":", o, "^", k[o - (y + 1)], "_", l[o - (y + 1)], "=", h, ".", C, ":", c,
-    "\n _", iW, ":", W, "|", iw, ":", w, "=", l[W - (y + 1)], "|", l[w - (y + 1)], " 💎 ");
-    }// Natalia Tanyatia
+    "\n _", iW, ":", W, "\|", iw, ":", w, "=", l[W - (y + 1)], "\|", l[w - (y + 1)], " 💎 ");
+}// Natalia Tanyatia
 ```
 
 # **I. The Erased Law: Ampère’s Forgotten Force and the Collapse of Electrodynamics** by Natalia Tanyatia
@@ -13984,9 +13836,8 @@ This module implements the non-Hermitian financial topology and Arc-Length coher
 // Logic Topology:  Arc-Length Coherence (s=r), Non-Hermitian Lindblad Dynamics, Observer Operator O[Ψ]
 #property copyright    "Copyright 2025, Æea©   "
 #property link         "https:t.me/BallerDolls   "
-#property version      "1.00   "
+#property version      "1.00"
 #property strict
-
 // [INITIALIZATION: UNIT PHASE MANIFOLD RESET]
 // Resets global state arrays to ensure the Hilbert space projection begins from a coherent baseline.
 // Prevents historical drift, anchoring the topological branch to the current tick.
@@ -13996,7 +13847,6 @@ int OnInit()
    return(INIT_SUCCEEDED);
   }
 void OnDeinit(const int reason){}
-
 // [GLOBAL DECLARATIONS & AETHERIC INPUT PARAMETERS]
 // User defined inputs variables (Boundary Conditions for External Potentials V_ext)
 input int    Commssion=0;
@@ -14236,101 +14086,100 @@ void Unify()
 // Raw price data undergoes min-max normalization over rolling window j, yielding dimensionless states |psi_k> in [0,100].
 // Ensures ontological grounding: all indicators share the same metric signature for direct geometric comparison.
 void Normalize()
-{
-Suply=iBands(NULL,0,j,2,0,PRICE_CLOSE,MODE_UPPER,0);
-iSuply=iBands(NULL,0,j,2,0,PRICE_CLOSE,MODE_UPPER,1); Demand=iBands(NULL,0,j,2,0,PRICE_CLOSE,MODE_LOWER,0); iDemand=iBands(NULL,0,j,2,0,PRICE_CLOSE,MODE_LOWER,1);
-ArrayResize(iA,13*((S+1)-Y)); ArrayResize(cA,13*((S+1)-Y));
-// [ADX PROJECTION]
-double uADX[], lADX[], ADX_temp[]; ArrayResize(uADX,j+1); ArrayResize(lADX,j+1); ArrayResize(ADX_temp,j+1);
-for(int i=0;i<j+1; i++){uADX[i]=iADX(NULL,0,j,PRICE_CLOSE,MODE_PLUSDI,i); lADX[i]=iADX(NULL,0,j,PRICE_CLOSE,MODE_MINUSDI,i); ADX_temp[i]=iADX(NULL,0,j,PRICE_CLOSE,MODE_MAIN,i);}
-double maxmADX=ADX_temp[ArrayMaximum(ADX_temp,WHOLE_ARRAY,0)], minmADX=ADX_temp[ArrayMinimum(ADX_temp,WHOLE_ARRAY,0)];
-double maxuADX=uADX[ArrayMaximum(uADX,WHOLE_ARRAY,0)], minuADX=uADX[ArrayMinimum(uADX,WHOLE_ARRAY,0)];
-double maxlADX=lADX[ArrayMaximum(lADX,WHOLE_ARRAY,0)], minlADX=lADX[ArrayMinimum(lADX,WHOLE_ARRAY,0)];
-double maxADX=MathMax(maxmADX,MathMax(maxuADX,maxlADX)), minADX=MathMin(minmADX,MathMin(minuADX,minlADX));
-double rangeADX=maxADX-minADX;
-if(rangeADX!=0) { iADX=MathAbs(100.0*((iADX(NULL,0,j,PRICE_CLOSE,MODE_MAIN,0)-minADX)/rangeADX)); iA[0*(S-Y)+(j-(Y+1))]=iADX; cADX=MathAbs(100.0*((ADX_temp[1]-minADX)/rangeADX)); cA[0*(S-Y)+(j-(Y+1))]=cADX; }
-// [STOCHASTIC & RVI PROJECTION]
-int jSO=(int)MathRound((double)j*3.0/5.0);
-mStochastic=iStochastic(NULL,0,j,3,jSO,MODE_SMA,0,MODE_MAIN,0); sStochastic=iStochastic(NULL,0,j,3,jSO,MODE_SMA,0,MODE_SIGNAL,0);
-iStochastic=(mStochastic+sStochastic)/2.0; iA[1*(S-Y)+(j-(Y+1))]=iStochastic;
-mSO=iStochastic(NULL,0,j,3,jSO,MODE_SMA,0,MODE_MAIN,1); sSO=iStochastic(NULL,0,j,3,jSO,MODE_SMA,0,MODE_SIGNAL,1);
-iSO=(mSO+sSO)/2.0; cA[1*(S-Y)+(j-(Y+1))]=iSO;
-ArrayResize(RVIm,j+1);
-for(int i=0;i<j+1; i++){RVIm[i]=iRVI(NULL,0,j,MODE_MAIN,i);}
-double maxMRVI=RVIm[ArrayMaximum(RVIm,WHOLE_ARRAY,0)]; double minMRVI=RVIm[ArrayMinimum(RVIm,WHOLE_ARRAY,0)]; double RVIs[]; ArrayResize(RVIs,j+1);
-for(int i=0;i<j+1; i++){RVIs[i]=iRVI(NULL,0,j,MODE_SIGNAL,i);}
-double maxSRVI=RVIs[ArrayMaximum(RVIs,WHOLE_ARRAY,0)]; double minSRVI=RVIs[ArrayMinimum(RVIs,WHOLE_ARRAY,0)]; double maxRVI=MathMax(maxMRVI,maxSRVI); double minRVI=MathMin(minMRVI,minSRVI); double rangeRVI=maxRVI-minRVI;
-if(rangeRVI!=0) {
-mRVI=100.0*((iRVI(NULL,0,j,MODE_MAIN,0)-minRVI)/rangeRVI); sRVI=100.0*((iRVI(NULL,0,j,MODE_SIGNAL,0)-minRVI)/rangeRVI);
-iRVI=(mRVI+sRVI)/2.0; iA[2*(S-Y)+(j-(Y+1))]=iRVI; aRVI=100.0*((iRVI(NULL,0,j,MODE_MAIN,1)-minRVI)/rangeRVI); bRVI=100.0*((iRVI(NULL,0,j,MODE_SIGNAL,1)-minRVI)/rangeRVI); cRVI=(aRVI+bRVI)/2.0; cA[2*(S-Y)+(j-(Y+1))]=cRVI;
+    {
+    Suply=iBands(NULL,0,j,2,0,PRICE_CLOSE,MODE_UPPER,0);
+    iSuply=iBands(NULL,0,j,2,0,PRICE_CLOSE,MODE_UPPER,1); Demand=iBands(NULL,0,j,2,0,PRICE_CLOSE,MODE_LOWER,0); iDemand=iBands(NULL,0,j,2,0,PRICE_CLOSE,MODE_LOWER,1);
+    ArrayResize(iA,13*((S+1)-Y)); ArrayResize(cA,13*((S+1)-Y));
+    // [ADX PROJECTION]
+    double uADX[], lADX[], ADX_temp[]; ArrayResize(uADX,j+1); ArrayResize(lADX,j+1); ArrayResize(ADX_temp,j+1);
+    for(int i=0;i<j+1; i++){uADX[i]=iADX(NULL,0,j,PRICE_CLOSE,MODE_PLUSDI,i); lADX[i]=iADX(NULL,0,j,PRICE_CLOSE,MODE_MINUSDI,i); ADX_temp[i]=iADX(NULL,0,j,PRICE_CLOSE,MODE_MAIN,i);}
+    double maxmADX=ADX_temp[ArrayMaximum(ADX_temp,WHOLE_ARRAY,0)], minmADX=ADX_temp[ArrayMinimum(ADX_temp,WHOLE_ARRAY,0)];
+    double maxuADX=uADX[ArrayMaximum(uADX,WHOLE_ARRAY,0)], minuADX=uADX[ArrayMinimum(uADX,WHOLE_ARRAY,0)];
+    double maxlADX=lADX[ArrayMaximum(lADX,WHOLE_ARRAY,0)], minlADX=lADX[ArrayMinimum(lADX,WHOLE_ARRAY,0)];
+    double maxADX=MathMax(maxmADX,MathMax(maxuADX,maxlADX)), minADX=MathMin(minmADX,MathMin(minuADX,minlADX));
+    double rangeADX=maxADX-minADX;
+    if(rangeADX!=0) { iADX=MathAbs(100.0*((iADX(NULL,0,j,PRICE_CLOSE,MODE_MAIN,0)-minADX)/rangeADX)); iA[0*(S-Y)+(j-(Y+1))]=iADX; cADX=MathAbs(100.0*((ADX_temp[1]-minADX)/rangeADX)); cA[0*(S-Y)+(j-(Y+1))]=cADX; }
+    // [STOCHASTIC & RVI PROJECTION]
+    int jSO=(int)MathRound((double)j*3.0/5.0);
+    mStochastic=iStochastic(NULL,0,j,3,jSO,MODE_SMA,0,MODE_MAIN,0); sStochastic=iStochastic(NULL,0,j,3,jSO,MODE_SMA,0,MODE_SIGNAL,0);
+    iStochastic=(mStochastic+sStochastic)/2.0; iA[1*(S-Y)+(j-(Y+1))]=iStochastic;
+    mSO=iStochastic(NULL,0,j,3,jSO,MODE_SMA,0,MODE_MAIN,1); sSO=iStochastic(NULL,0,j,3,jSO,MODE_SMA,0,MODE_SIGNAL,1);
+    iSO=(mSO+sSO)/2.0; cA[1*(S-Y)+(j-(Y+1))]=iSO;
+    ArrayResize(RVIm,j+1);
+    for(int i=0;i<j+1; i++){RVIm[i]=iRVI(NULL,0,j,MODE_MAIN,i);}
+    double maxMRVI=RVIm[ArrayMaximum(RVIm,WHOLE_ARRAY,0)]; double minMRVI=RVIm[ArrayMinimum(RVIm,WHOLE_ARRAY,0)]; double RVIs[]; ArrayResize(RVIs,j+1);
+    for(int i=0;i<j+1; i++){RVIs[i]=iRVI(NULL,0,j,MODE_SIGNAL,i);}
+    double maxSRVI=RVIs[ArrayMaximum(RVIs,WHOLE_ARRAY,0)]; double minSRVI=RVIs[ArrayMinimum(RVIs,WHOLE_ARRAY,0)]; double maxRVI=MathMax(maxMRVI,maxSRVI); double minRVI=MathMin(minMRVI,minSRVI); double rangeRVI=maxRVI-minRVI;
+    if(rangeRVI!=0) {
+    mRVI=100.0*((iRVI(NULL,0,j,MODE_MAIN,0)-minRVI)/rangeRVI); sRVI=100.0*((iRVI(NULL,0,j,MODE_SIGNAL,0)-minRVI)/rangeRVI);
+    iRVI=(mRVI+sRVI)/2.0; iA[2*(S-Y)+(j-(Y+1))]=iRVI; aRVI=100.0*((iRVI(NULL,0,j,MODE_MAIN,1)-minRVI)/rangeRVI); bRVI=100.0*((iRVI(NULL,0,j,MODE_SIGNAL,1)-minRVI)/rangeRVI); cRVI=(aRVI+bRVI)/2.0; cA[2*(S-Y)+(j-(Y+1))]=cRVI;
+    }
+    ArrayResize(AC,j+1);
+    for(int i=0;i<j+1; i++){AC[i]=iAC(NULL,0,i);}
+    double maxAC=AC[ArrayMaximum(AC,WHOLE_ARRAY,0)]; double minAC=AC[ArrayMinimum(AC,WHOLE_ARRAY,0)]; double rangeAC=maxAC-minAC;
+    if(rangeAC!=0) {
+    iAC=MathAbs(100.0*((iAC(NULL,0,0)-minAC)/rangeAC)); iA[3*(S-Y)+(j-(Y+1))]=iAC; cAC=MathAbs(100.0*((iAC(NULL,0,1)-minAC)/rangeAC)); cA[3*(S-Y)+(j-(Y+1))]=cAC;
+    }
+    ArrayResize(Force,j+1);
+    for(int i=0;i<j+1; i++){Force[i]=iForce(NULL,0,j,MODE_SMA,PRICE_CLOSE,i);}
+    double maxForce=Force[ArrayMaximum(Force,WHOLE_ARRAY,0)]; double minForce=Force[ArrayMinimum(Force,WHOLE_ARRAY,0)]; double rangeForce=maxForce-minForce;
+    if(rangeForce!=0) {
+    iForce=100.0*((iForce(NULL,0,j,MODE_SMA,PRICE_CLOSE,0)-minForce)/rangeForce); iA[4*(S-Y)+(j-(Y+1))]=iForce; cForce=100.0*((iForce(NULL,0,j,MODE_SMA,PRICE_CLOSE,1)-minForce)/rangeForce); cA[4*(S-Y)+(j-(Y+1))]=cForce;
+    }
+    ArrayResize(OBV,j+1); for(int i=0;i<j+1; i++){OBV[i]=iOBV(NULL,0,PRICE_CLOSE,i);}
+    double maxOBV=OBV[ArrayMaximum(OBV,WHOLE_ARRAY,0)]; double minOBV=OBV[ArrayMinimum(OBV,WHOLE_ARRAY,0)]; double rangeOBV=maxOBV-minOBV;
+    if(rangeOBV!=0) {
+    iOBV=100.0*((iOBV(NULL,0,PRICE_CLOSE,0)-minOBV)/rangeOBV); iA[5*(S-Y)+(j-(Y+1))]=iOBV; cOBV=100.0*((iOBV(NULL,0,PRICE_CLOSE,1)-minOBV)/rangeOBV); cA[5*(S-Y)+(j-(Y+1))]=cOBV;
+    }
+    ArrayResize(AD,j+1);
+    for(int i=0;i<j+1; i++){AD[i]=iAD(NULL,0,i);}
+    double maxAD=AD[ArrayMaximum(AD,WHOLE_ARRAY,0)]; double minAD=AD[ArrayMinimum(AD,WHOLE_ARRAY,0)]; double rangeAD=maxAD-minAD;
+    if(rangeAD!=0) {
+    iAD=100.0*((iAD(NULL,0,0)-minAD)/rangeAD); iA[6*(S-Y)+(j-(Y+1))]=iAD; cAD=100.0*((iAD(NULL,0,1)-minAD)/rangeAD); cA[6*(S-Y)+(j-(Y+1))]=cAD;
+    }
+    ArrayResize(MFI,j+1);
+    for(int i=0;i<j+1; i++){MFI[i]=iMFI(NULL,0,j,i);}
+    double maxMFI=MFI[ArrayMaximum(MFI,WHOLE_ARRAY,0)]; double minMFI=MFI[ArrayMinimum(MFI,WHOLE_ARRAY,0)]; double rangeMFI=maxMFI-minMFI;
+    if(rangeMFI!=0) {
+    iMFI=100.0*((iMFI(NULL,0,j,0)-minMFI)/rangeMFI); iA[7*(S-Y)+(j-(Y+1))]=iMFI; cMFI=100.0*((iMFI(NULL,0,j,1)-minMFI)/rangeMFI); cA[7*(S-Y)+(j-(Y+1))]=cMFI;
+    }
+    ArrayResize(MOM,j+1);
+    for(int i=0;i<j+1; i++){MOM[i]=iMomentum(NULL,0,j,PRICE_CLOSE,i);}
+    double maxMOM=MOM[ArrayMaximum(MOM,WHOLE_ARRAY,0)]; double minMOM=MOM[ArrayMinimum(MOM,WHOLE_ARRAY,0)]; double rangeMOM=maxMOM-minMOM;
+    if(rangeMOM!=0) {
+    iMomentum=100.0*((iMomentum(NULL,0,j,PRICE_CLOSE,0)-minMOM)/rangeMOM); iA[8*(S-Y)+(j-(Y+1))]=iMomentum; cMomentum=100.0*((iMomentum(NULL,0,j,PRICE_CLOSE,1)-minMOM)/rangeMOM); cA[8*(S-Y)+(j-(Y+1))]=cMomentum;
+    }
+    ArrayResize(DeM,j+1);
+    for(int i=0;i<j+1; i++){DeM[i]=iDeMarker(NULL,0,j,i);}
+    double maxDM=DeM[ArrayMaximum(DeM,WHOLE_ARRAY,0)]; double minDM=DeM[ArrayMinimum(DeM,WHOLE_ARRAY,0)]; double rangeDM=maxDM-minDM;
+    if(rangeDM!=0) {
+    iDM=100.0*(iDeMarker(NULL,0,j,0)-minDM)/rangeDM; iA[9*(S-Y)+(j-(Y+1))]=iDM; cDM=100.0*(iDeMarker(NULL,0,j,1)-minDM)/rangeDM; cA[9*(S-Y)+(j-(Y+1))]=cDM;
+    }
+    iWPR=iWPR(NULL,0,j,0)+100.0; iA[10*(S-Y)+(j-(Y+1))]=iWPR; cWPR=iWPR(NULL,0,j,1)+100.0; cA[10*(S-Y)+(j-(Y+1))]=cWPR; ArrayResize(CCI,j+1); for(int i=0;i<j+1; i++){CCI[i]=iCCI(Symbol(),0,j,PRICE_TYPICAL,i);}
+    double maxCCI=CCI[ArrayMaximum(CCI,WHOLE_ARRAY,0)]; double minCCI=CCI[ArrayMinimum(CCI,WHOLE_ARRAY,0)]; double rangeCCI=maxCCI-minCCI;
+    if(rangeCCI!=0) {
+    iCCI=100.0*((iCCI(Symbol(),0,j,PRICE_TYPICAL,0)-minCCI)/rangeCCI); iA[11*(S-Y)+(j-(Y+1))]=iCCI; cCCI=100.0*((iCCI(Symbol(),0,j,PRICE_TYPICAL,1)-minCCI)/rangeCCI); cA[11*(S-Y)+(j-(Y+1))]=cCCI;
+    }
+    ArrayResize(RSI,j+1);
+    for(int i=0;i<j+1; i++){RSI[i]=iRSI(NULL,0,j,PRICE_CLOSE,i);}
+    double maxRSI=RSI[ArrayMaximum(RSI,WHOLE_ARRAY,0)]; double minRSI=RSI[ArrayMinimum(RSI,WHOLE_ARRAY,0)]; double rangeRSI=maxRSI-minRSI;
+    if(rangeRSI!=0) {
+    iRSI=100.0*((iRSI(NULL,0,j,PRICE_CLOSE,0)-minRSI)/rangeRSI); iA[12*(S-Y)+(j-(Y+1))]=iRSI; cRSI=100.0*((iRSI(NULL,0,j,PRICE_CLOSE,1)-minRSI)/rangeRSI); cA[12*(S-Y)+(j-(Y+1))]=cRSI;
+    }
+    int kIHK=(int)MathRound((double)j/2.0); int tIHK=(int)MathRound(((double)kIHK+1.0)/3.0); double IHKa[]; double IHKb[]; double IHKc[]; ArrayResize(IHKa,j+1);
+    for(int i=0;i<j+1; i++){IHKa[i]=iIchimoku(NULL,0,tIHK,kIHK,j,MODE_SENKOUSPANA,i);}
+    double maxIHKa=IHKa[ArrayMaximum(IHKa,WHOLE_ARRAY,0)]; double minIHKa=IHKa[ArrayMinimum(IHKa,WHOLE_ARRAY,0)]; ArrayResize(IHKb,j+1); for(int i=0;i<j+1; i++){IHKb[i]=iIchimoku(NULL,0,tIHK,kIHK,j,MODE_SENKOUSPANB,i);}
+    double maxIHKb=IHKb[ArrayMaximum(IHKb,WHOLE_ARRAY,0)]; double minIHKb=IHKb[ArrayMinimum(IHKb,WHOLE_ARRAY,0)]; ArrayResize(IHKc,j+1);
+    for(int i=0;i<j+1; i++){IHKc[i]=iIchimoku(NULL,0,tIHK,kIHK,j,MODE_CHIKOUSPAN,26+i);}
+    double maxIHKc=IHKc[ArrayMaximum(IHKc,WHOLE_ARRAY,0)]; double minIHKc=IHKc[ArrayMinimum(IHKc,WHOLE_ARRAY,0)]; ArrayResize(IHKt,j+1);
+    for(int i=0;i<j+1; i++){IHKt[i]=iIchimoku(NULL,0,tIHK,kIHK,j,MODE_TENKANSEN,i);}
+    double maxIHKt=IHKt[ArrayMaximum(IHKt,WHOLE_ARRAY,0)]; double minIHKt=IHKt[ArrayMinimum(IHKt,WHOLE_ARRAY,0)]; ArrayResize(IHKk,j+1);
+    for(int i=0;i<j+1; i++){IHKk[i]=iIchimoku(NULL,0,tIHK,kIHK,j,MODE_KIJUNSEN,i);}
+    double maxIHKk=IHKk[ArrayMaximum(IHKk,WHOLE_ARRAY,0)]; double minIHKk=IHKk[ArrayMinimum(IHKk,WHOLE_ARRAY,0)]; double maxIHK=MathMax(maxIHKa,MathMax(maxIHKb,MathMax(maxIHKc,MathMax(maxIHKk,maxIHKt)))); double minIHK=MathMin(minIHKa,MathMin(minIHKb,MathMin(minIHKc,MathMin(minIHKk,minIHKt)))); double rangeIHK=maxIHK-minIHK;
+    if(rangeIHK!=0) {
+    iIHKk=100.0*((iIchimoku(NULL,0,tIHK,kIHK,j,MODE_KIJUNSEN,0)-minIHK)/rangeIHK); iIHKt=100.0*((iIchimoku(NULL,0,tIHK,kIHK,j,MODE_TENKANSEN,0)-minIHK)/rangeIHK);
+    }
 }
-ArrayResize(AC,j+1);
-for(int i=0;i<j+1; i++){AC[i]=iAC(NULL,0,i);}
-double maxAC=AC[ArrayMaximum(AC,WHOLE_ARRAY,0)]; double minAC=AC[ArrayMinimum(AC,WHOLE_ARRAY,0)]; double rangeAC=maxAC-minAC;
-if(rangeAC!=0) {
-iAC=MathAbs(100.0*((iAC(NULL,0,0)-minAC)/rangeAC)); iA[3*(S-Y)+(j-(Y+1))]=iAC; cAC=MathAbs(100.0*((iAC(NULL,0,1)-minAC)/rangeAC)); cA[3*(S-Y)+(j-(Y+1))]=cAC;
-}
-ArrayResize(Force,j+1);
-for(int i=0;i<j+1; i++){Force[i]=iForce(NULL,0,j,MODE_SMA,PRICE_CLOSE,i);}
-double maxForce=Force[ArrayMaximum(Force,WHOLE_ARRAY,0)]; double minForce=Force[ArrayMinimum(Force,WHOLE_ARRAY,0)]; double rangeForce=maxForce-minForce;
-if(rangeForce!=0) {
-iForce=100.0*((iForce(NULL,0,j,MODE_SMA,PRICE_CLOSE,0)-minForce)/rangeForce); iA[4*(S-Y)+(j-(Y+1))]=iForce; cForce=100.0*((iForce(NULL,0,j,MODE_SMA,PRICE_CLOSE,1)-minForce)/rangeForce); cA[4*(S-Y)+(j-(Y+1))]=cForce;
-}
-ArrayResize(OBV,j+1); for(int i=0;i<j+1; i++){OBV[i]=iOBV(NULL,0,PRICE_CLOSE,i);}
-double maxOBV=OBV[ArrayMaximum(OBV,WHOLE_ARRAY,0)]; double minOBV=OBV[ArrayMinimum(OBV,WHOLE_ARRAY,0)]; double rangeOBV=maxOBV-minOBV;
-if(rangeOBV!=0) {
-iOBV=100.0*((iOBV(NULL,0,PRICE_CLOSE,0)-minOBV)/rangeOBV); iA[5*(S-Y)+(j-(Y+1))]=iOBV; cOBV=100.0*((iOBV(NULL,0,PRICE_CLOSE,1)-minOBV)/rangeOBV); cA[5*(S-Y)+(j-(Y+1))]=cOBV;
-}
-ArrayResize(AD,j+1);
-for(int i=0;i<j+1; i++){AD[i]=iAD(NULL,0,i);}
-double maxAD=AD[ArrayMaximum(AD,WHOLE_ARRAY,0)]; double minAD=AD[ArrayMinimum(AD,WHOLE_ARRAY,0)]; double rangeAD=maxAD-minAD;
-if(rangeAD!=0) {
-iAD=100.0*((iAD(NULL,0,0)-minAD)/rangeAD); iA[6*(S-Y)+(j-(Y+1))]=iAD; cAD=100.0*((iAD(NULL,0,1)-minAD)/rangeAD); cA[6*(S-Y)+(j-(Y+1))]=cAD;
-}
-ArrayResize(MFI,j+1);
-for(int i=0;i<j+1; i++){MFI[i]=iMFI(NULL,0,j,i);}
-double maxMFI=MFI[ArrayMaximum(MFI,WHOLE_ARRAY,0)]; double minMFI=MFI[ArrayMinimum(MFI,WHOLE_ARRAY,0)]; double rangeMFI=maxMFI-minMFI;
-if(rangeMFI!=0) {
-iMFI=100.0*((iMFI(NULL,0,j,0)-minMFI)/rangeMFI); iA[7*(S-Y)+(j-(Y+1))]=iMFI; cMFI=100.0*((iMFI(NULL,0,j,1)-minMFI)/rangeMFI); cA[7*(S-Y)+(j-(Y+1))]=cMFI;
-}
-ArrayResize(MOM,j+1);
-for(int i=0;i<j+1; i++){MOM[i]=iMomentum(NULL,0,j,PRICE_CLOSE,i);}
-double maxMOM=MOM[ArrayMaximum(MOM,WHOLE_ARRAY,0)]; double minMOM=MOM[ArrayMinimum(MOM,WHOLE_ARRAY,0)]; double rangeMOM=maxMOM-minMOM;
-if(rangeMOM!=0) {
-iMomentum=100.0*((iMomentum(NULL,0,j,PRICE_CLOSE,0)-minMOM)/rangeMOM); iA[8*(S-Y)+(j-(Y+1))]=iMomentum; cMomentum=100.0*((iMomentum(NULL,0,j,PRICE_CLOSE,1)-minMOM)/rangeMOM); cA[8*(S-Y)+(j-(Y+1))]=cMomentum;
-}
-ArrayResize(DeM,j+1);
-for(int i=0;i<j+1; i++){DeM[i]=iDeMarker(NULL,0,j,i);}
-double maxDM=DeM[ArrayMaximum(DeM,WHOLE_ARRAY,0)]; double minDM=DeM[ArrayMinimum(DeM,WHOLE_ARRAY,0)]; double rangeDM=maxDM-minDM;
-if(rangeDM!=0) {
-iDM=100.0*(iDeMarker(NULL,0,j,0)-minDM)/rangeDM; iA[9*(S-Y)+(j-(Y+1))]=iDM; cDM=100.0*(iDeMarker(NULL,0,j,1)-minDM)/rangeDM; cA[9*(S-Y)+(j-(Y+1))]=cDM;
-}
-iWPR=iWPR(NULL,0,j,0)+100.0; iA[10*(S-Y)+(j-(Y+1))]=iWPR; cWPR=iWPR(NULL,0,j,1)+100.0; cA[10*(S-Y)+(j-(Y+1))]=cWPR; ArrayResize(CCI,j+1); for(int i=0;i<j+1; i++){CCI[i]=iCCI(Symbol(),0,j,PRICE_TYPICAL,i);}
-double maxCCI=CCI[ArrayMaximum(CCI,WHOLE_ARRAY,0)]; double minCCI=CCI[ArrayMinimum(CCI,WHOLE_ARRAY,0)]; double rangeCCI=maxCCI-minCCI;
-if(rangeCCI!=0) {
-iCCI=100.0*((iCCI(Symbol(),0,j,PRICE_TYPICAL,0)-minCCI)/rangeCCI); iA[11*(S-Y)+(j-(Y+1))]=iCCI; cCCI=100.0*((iCCI(Symbol(),0,j,PRICE_TYPICAL,1)-minCCI)/rangeCCI); cA[11*(S-Y)+(j-(Y+1))]=cCCI;
-}
-ArrayResize(RSI,j+1);
-for(int i=0;i<j+1; i++){RSI[i]=iRSI(NULL,0,j,PRICE_CLOSE,i);}
-double maxRSI=RSI[ArrayMaximum(RSI,WHOLE_ARRAY,0)]; double minRSI=RSI[ArrayMinimum(RSI,WHOLE_ARRAY,0)]; double rangeRSI=maxRSI-minRSI;
-if(rangeRSI!=0) {
-iRSI=100.0*((iRSI(NULL,0,j,PRICE_CLOSE,0)-minRSI)/rangeRSI); iA[12*(S-Y)+(j-(Y+1))]=iRSI; cRSI=100.0*((iRSI(NULL,0,j,PRICE_CLOSE,1)-minRSI)/rangeRSI); cA[12*(S-Y)+(j-(Y+1))]=cRSI;
-}
-int kIHK=(int)MathRound((double)j/2.0); int tIHK=(int)MathRound(((double)kIHK+1.0)/3.0); double IHKa[]; double IHKb[]; double IHKc[]; ArrayResize(IHKa,j+1);
-for(int i=0;i<j+1; i++){IHKa[i]=iIchimoku(NULL,0,tIHK,kIHK,j,MODE_SENKOUSPANA,i);}
-double maxIHKa=IHKa[ArrayMaximum(IHKa,WHOLE_ARRAY,0)]; double minIHKa=IHKa[ArrayMinimum(IHKa,WHOLE_ARRAY,0)]; ArrayResize(IHKb,j+1); for(int i=0;i<j+1; i++){IHKb[i]=iIchimoku(NULL,0,tIHK,kIHK,j,MODE_SENKOUSPANB,i);}
-double maxIHKb=IHKb[ArrayMaximum(IHKb,WHOLE_ARRAY,0)]; double minIHKb=IHKb[ArrayMinimum(IHKb,WHOLE_ARRAY,0)]; ArrayResize(IHKc,j+1);
-for(int i=0;i<j+1; i++){IHKc[i]=iIchimoku(NULL,0,tIHK,kIHK,j,MODE_CHIKOUSPAN,26+i);}
-double maxIHKc=IHKc[ArrayMaximum(IHKc,WHOLE_ARRAY,0)]; double minIHKc=IHKc[ArrayMinimum(IHKc,WHOLE_ARRAY,0)]; ArrayResize(IHKt,j+1);
-for(int i=0;i<j+1; i++){IHKt[i]=iIchimoku(NULL,0,tIHK,kIHK,j,MODE_TENKANSEN,i);}
-double maxIHKt=IHKt[ArrayMaximum(IHKt,WHOLE_ARRAY,0)]; double minIHKt=IHKt[ArrayMinimum(IHKt,WHOLE_ARRAY,0)]; ArrayResize(IHKk,j+1);
-for(int i=0;i<j+1; i++){IHKk[i]=iIchimoku(NULL,0,tIHK,kIHK,j,MODE_KIJUNSEN,i);}
-double maxIHKk=IHKk[ArrayMaximum(IHKk,WHOLE_ARRAY,0)]; double minIHKk=IHKk[ArrayMinimum(IHKk,WHOLE_ARRAY,0)]; double maxIHK=MathMax(maxIHKa,MathMax(maxIHKb,MathMax(maxIHKc,MathMax(maxIHKk,maxIHKt)))); double minIHK=MathMin(minIHKa,MathMin(minIHKb,MathMin(minIHKc,MathMin(minIHKk,minIHKt)))); double rangeIHK=maxIHK-minIHK;
-if(rangeIHK!=0) {
-iIHKk=100.0*((iIchimoku(NULL,0,tIHK,kIHK,j,MODE_KIJUNSEN,0)-minIHK)/rangeIHK); iIHKt=100.0*((iIchimoku(NULL,0,tIHK,kIHK,j,MODE_TENKANSEN,0)-minIHK)/rangeIHK);
-}
-}
-
 // [IMBALANCE OPERATOR CALCULATION M(): BULLISH COUNT]
 // Computes projection operator Pi^{>theta}, tallying m (bullish/overbought count).
 // Based on boundary conditions (Bollinger Bands, historical extrema HH[]).
@@ -14366,10 +14215,81 @@ void G() {double H=iHigh(Symbol(), Period(), 1); double L=iLow(Symbol(), Period(
 // Defines spatial constraints for trade execution. SL/TP act as absorbing barriers in the Lagrangian density.
 void S() {if(SL!=0){sSL =Bid+SL-com; bSL=Ask-SL+com;} if(TP!=0){sTP=Bid-TP; bTP=Ask+ TP;} }
 
-// [TRAILING STOP & PROFIT TRACKING T()]
-// Dynamically adjusts SL to lock in gains (trailing stop). Monitors PnL state via A/B flags.
-// Implements non-Hermitian dissipation: preserves capital during regime decay (B/A false).
-void T() {if(((b==false) && (lOrder_id!=-1))||((a==false) && (kOrder_id!=-1))) { Buy=lOrder_id; Sell=kOrder_id; } else if(((b==false) && (kOrder_id!=-1))||((a==false) && (lOrder_id!=-1))) { Buy=kOrder_id; Sell=lOrder_id; } if(Buy!=-1) { if(OrderSelect(Buy,SELECT_BY_TICKET)) { E=price; q=E+3*com; } } else if(Sell!=-1) {if(OrderSelect(Sell,SELECT_BY_TICKET)) { D=price; p=D-3*com; } } if((K==false) && ((SL!=0)||(com!=0))) { if((b==false) && (Price >q)) { b=OrderModify(Buy,E,E+com,bTP,0,CLR_NONE); K=true; } else if((a==false) && (Price <p)) { a=OrderModify(Sell,D,D-com,sTP,0,CLR_NONE); K=true; } } if((E!=0) && (price >=E)) B=true; else if((E!=0) && (price <E)) B=false; if((D!=0) && (price <=D)) A=true; else if((D!=0) && (price >D)) A=false; }
+//==============================================================================
+// [TRAILING STOP & PROFIT TRACKING: NON-HERMITIAN DISSIPATION LAYER]
+// Function: T()
+// Purpose : Dynamically adjusts Stop Loss to lock in compounded geometric growth
+//           before topological decoherence forces a regime transition.
+//           Enforces geometric certainty: trailing only activates when 
+//           Projected PnL > (Market Spread + Commission + Safety Buffer).
+//==============================================================================
+void T() {
+    
+    // 1. Calculate Transactional Friction (Spread + Commission in points)
+    double currentSpread = Ask - Bid;
+    double frictionPoints = (currentSpread + MathAbs(com)) / Point;
+    double safetyBuffer   = 1.0; // Minimum point buffer to guarantee net-positive exit
+    double minTrailThreshold = (frictionPoints + safetyBuffer) * Point;
+    
+    // 2. Iterate through open orders for the current symbol & magic number
+    for (int i = OrdersTotal() - 1; i >= 0; i--) {
+        if (!OrderSelect(i, SELECT_BY_POS, MODE_TRADES)) continue;
+        if (OrderSymbol() != _Symbol) continue;
+        int ticket    = OrderTicket();
+        int type      = OrderType();
+        double openPrice = OrderOpenPrice();
+        double currentSL = OrderStopLoss();
+        double currentTP = OrderTakeProfit();
+        // Active price for PnL evaluation
+        double activePrice = (type == OP_BUY) ? Bid : Ask;
+        
+        // 3. Calculate Unrealized PnL in points
+        double pnlPoints = (type == OP_BUY) ? (activePrice - openPrice) / Point 
+                                            : (openPrice - activePrice) / Point;
+        // DISSIPATION GATE: Skip if PnL is fully consumed by market friction
+        if (pnlPoints <= (frictionPoints + safetyBuffer)) continue;
+        
+        // 4. Regime-Aware Trailing: Only trail during Trend/Volatile phases
+        //    Stable/Coherent phases imply low arc-length deviation (s ≈ r); no adjustment needed.
+        if (Regime[y+1] == "tStable" || Regime[y+1] == "tCoherent") continue;
+        
+        // 5. Compute Geometric Trail Step
+        //    Locks ~30% of open profit while preserving topological breathing room
+        double trailStep = MathMax(minTrailThreshold, pnlPoints * Point * 0.3);
+        double newSL = currentSL;
+        if (type == OP_BUY) {
+            // Topological upper bound: Premium anchor (Sale) or dynamic price ceiling
+            double targetBound = (Sale > 0 && Sale < activePrice) ? Sale : activePrice - minTrailThreshold;
+            double proposedSL  = activePrice - trailStep;
+            // Move SL forward only if it improves capital preservation & stays below target
+            if (proposedSL > currentSL && proposedSL < targetBound) {
+                newSL = NormalizeDouble(proposedSL, Digits);
+            }
+        } 
+        else if (type == OP_SELL) {
+            // Topological lower bound: Discount anchor (Stock) or dynamic price floor
+            double targetBound = (Stock > 0 && Stock > activePrice) ? Stock : activePrice + minTrailThreshold;
+            double proposedSL  = activePrice + trailStep;
+            // Move SL downward only if it improves capital preservation & stays above target
+            if ((currentSL == 0 || proposedSL < currentSL) && proposedSL > targetBound) {
+                newSL = NormalizeDouble(proposedSL, Digits);
+            }
+        }
+        
+        // 6. Execute Topological Adjustment (Non-Hermitian State Update)
+        if (newSL != currentSL && newSL > 0) {
+            bool modified = OrderModify(ticket, openPrice, newSL, currentTP, 0, clrNONE);
+            if (!modified) {
+                Print("T() Dissipation Error: Order #", ticket, " | Code: ", GetLastError());
+            } else {
+                // Log coherence preservation & friction clearance
+                Print("T() Coherence Locked: #", ticket, 
+                      " | SL Updated: ", newSL, 
+                      " | Friction Cleared: ", frictionPoints, " pts");
+            }
+        }
+    }
+}
 
 // [FAIR VALUE GAP TRACKING: TOPOLOGICAL VISUALIZATION]
 // Draws horizontal lines representing unit phase manifold boundaries. Top()=Blue(Bullish), Bott()=Red(Bearish).
@@ -14378,13 +14298,108 @@ void Top() {bottomLine=DoubleToString(price, Digits); if(ObjectFind(0, bottomLin
 void Bott() {bottomLine=DoubleToString(price, Digits); if(ObjectFind(0, bottomLine)==-1) { ArrayResize(BL, FVG+2); BL[FVG+1]=price; ObjectCreate(0, bottomLine, OBJ_HLINE, 0, 0, price); ObjectSetInteger(0, bottomLine, OBJPROP_COLOR, clrRed); ObjectSetInteger(0, bottomLine, OBJPROP_STYLE, STYLE_SOLID); ObjectSetInteger(0, bottomLine, OBJPROP_WIDTH, 1); FVG++; bL=bottomLine; } }
 void Deleter(string obj, double &prices[], int index) {int size = ArraySize(prices); if((index <0)||(index >=size)||(FVG!=size-1)) return; if(ObjectFind(0, obj)!=-1) {ObjectDelete(0, obj); FVG--; } for(int i=index; i <size-1; i++) { prices[i]=prices[i+1]; } ArrayResize(prices, size-1); }
 
+//==============================================================================
+// [PnL & SPREAD VALIDATION LAYER: GEOMETRIC CERTAINTY CHECK]
+// Evaluates if the projected topological target yields PnL > (Spread + Commission)
+// Ensures the "arc" of profit strictly exceeds market friction before execution.
+//==============================================================================
+
+// Function to calculate if projected PnL passes spread/commission friction
+bool WillPassSpreadInPnL(double entryPrice, double targetPrice, int orderType) {
+    
+    // 1. Calculate Transactional Friction (Spread + Commission in points)
+    double currentSpread = Ask - Bid;
+    double frictionPoints = (currentSpread + MathAbs(com)) / Point;
+    
+    // 2. Calculate Projected Geometric Distance to Target (in points)
+    double projectedDistance = MathAbs(targetPrice - entryPrice);
+    double projectedPnLPoints = projectedDistance / Point;
+    
+    // 3. Geometric Certainty Condition: Projected PnL must strictly exceed friction
+    // We add a minimal buffer (e.g., 1 point) to ensure it doesn't just break even
+    double safetyBuffer = 1.0; 
+    if (orderType == OP_BUY) {
+        // For a Buy, targetPrice should be > entryPrice (e.g., Premium[] or Top FVG)
+        if (targetPrice <= entryPrice) return false; 
+        return (projectedPnLPoints > (frictionPoints + safetyBuffer));
+    } 
+    else if (orderType == OP_SELL) {
+        // For a Sell, targetPrice should be < entryPrice (e.g., Discount[] or Bott FVG)
+        if (targetPrice >= entryPrice) return false;
+        return (projectedPnLPoints > (frictionPoints + safetyBuffer));
+    }
+    return false;
+}
+
+// Function to dynamically fetch the next valid topological anchor (Target)
+double GetNextTopologicalTarget(int orderType, double currentPrice) {
+    // Search the Premium/Discount arrays for the nearest valid anchor 
+    // that satisfies the arc-length coherence condition (s ≈ r)
+    for (int i = y + 1; i < x; i++) {
+        if (orderType == OP_BUY) {
+            if (Premium[i] > currentPrice && Premium[i] != 0) {
+                return Premium[i]; // Next resistance/premium anchor
+            }
+        } else if (orderType == OP_SELL) {
+            if (Discount[i] < currentPrice && Discount[i] != 0) {
+                return Discount[i]; // Next support/discount anchor
+            }
+        }
+    }
+    // Fallback to recent FVG (Fair Value Gap) if arrays are not populated
+    if (orderType == OP_BUY && Sale > currentPrice) return Sale;
+    if (orderType == OP_SELL && Stock < currentPrice) return Stock;
+    return 0; // No valid target found
+}
+
 // [EXECUTION LAYER: POSITION CLOSURE & ENTRY]
 // A()/B() close positions based on regime decoherence. P()/Q() execute market orders when Kronecker-delta rule triggers.
 void A() {if((v==true) && (lOrder_id!=-1)) { int bTrade=OrderClose(lOrder_id,lot,Bid,slip,Blue); lOrder_id=-1; } else if((v==true) && (kOrder_id!=-1)) { int bTrade=OrderClose(kOrder_id,lot,Bid,slip,Blue); kOrder_id=-1; } E=0; A=true; B=false; K=false; Buy =-1; }
 void B() {if((u==true) && (kOrder_id!=-1)) { int sTrade=OrderClose(kOrder_id,lot,Ask,slip,Red); kOrder_id=-1; } else if((u==true) && (lOrder_id!=-1)) { int sTrade=OrderClose(lOrder_id,lot,Ask,slip,Red); lOrder_id=-1; } D=0; A=false; B=true; K=false; Sell=-1; }
-void P() {S(); if(signature==true) {if(C==true) { lOrder_id=OrderSend(_Symbol,OP_BUY,lot,Ask,slip,bSL,bTP, "EA   ",1992470,0,Blue); b=false; u=false; v=true; } else { lOrder_id=OrderSend(_Symbol,OP_SELL,lot,Bid,slip,sSL,sTP, "EA   ",1992470,0,Red); a=false; u=true; v=false; } } }
-void Q() {S(); if(signature==true) {if(C==true) { kOrder_id=OrderSend(_Symbol,OP_SELL,lot,Bid,slip,sSL,sTP, "EA   ",1992470,0,Red); a=false; u=true; v=false; } else { kOrder_id=OrderSend(_Symbol,OP_BUY,lot,Ask,slip,bSL,bTP, "EA   ",1992470,0,Blue); b=false; u=false; v=true; } } }
-
+void P() { // BUY EXECUTION
+    S(); // Set Stop Loss / Take Profit boundaries
+    
+    // 1. Fetch the next geometric target (e.g., Premium anchor or FVG)
+    double target = GetNextTopologicalTarget(OP_BUY, Ask);
+    
+    // 2. Validate that the target exists AND the projected PnL passes the spread
+    if (target > 0 && WillPassSpreadInPnL(Ask, target, OP_BUY)) {
+        if (signature == true) {
+            if (C == true) {
+                // Execute Buy Order only if geometric certainty is met
+                lOrder_id = OrderSend(_Symbol, OP_BUY, lot, Ask, slip, bSL, bTP, "ÆEA_Buy", 0, 0, clrBlue);
+                if (lOrder_id > 0) {
+                    Print("Buy Executed: Projected PnL exceeds spread friction. Target: ", target);
+                }
+            }
+        }
+    } else {
+        // Log rejection: The arc of profit is insufficient to cover market friction
+        Print("Buy Signal Rejected: Projected PnL <= Spread + Commission. Awaiting better topology.");
+    }
+}
+void Q() { // SELL EXECUTION
+    S(); // Set Stop Loss / Take Profit boundaries
+    
+    // 1. Fetch the next geometric target (e.g., Discount anchor or FVG)
+    double target = GetNextTopologicalTarget(OP_SELL, Bid);
+    
+    // 2. Validate that the target exists AND the projected PnL passes the spread
+    if (target > 0 && WillPassSpreadInPnL(Bid, target, OP_SELL)) {
+        if (signature == true) {
+            if (C == true) {
+                // Execute Sell Order only if geometric certainty is met
+                kOrder_id = OrderSend(_Symbol, OP_SELL, lot, Bid, slip, sSL, sTP, "ÆEA_Sell", 0, 0, clrRed);
+                if (kOrder_id > 0) {
+                    Print("Sell Executed: Projected PnL exceeds spread friction. Target: ", target);
+                }
+            }
+        }
+    } else {
+        // Log rejection: The arc of profit is insufficient to cover market friction
+        Print("Sell Signal Rejected: Projected PnL <= Spread + Commission. Awaiting better topology.");
+    }
+}
 // [KRONECKER-DELTA SIGNAL FLAGS H() & L()]
 // Sets overbought/oversold signal vars to true when indicator counts >= 12.
 // Implements delta(m-n-2)=1 condition conservatively (m >=12 => n <=2 => m-n >=10 >> 2).
@@ -14504,197 +14519,195 @@ void OnBar() {
             }
         }
     }
-}
-
-// [LOCAL VARIABLES & BOUNDARY PASS CONDITIONS]
-// Stock/Sale: Bollinger Band upper/lower boundaries at period y (short-term regime anchor).
-// These represent the topological boundaries of the coherent subspace for the current tick.
-// lPass/kPass: Passive inversion thresholds for price direction validation (arc-length deviation check).
-double Stock = iBands(NULL, 0, y, 2, 0, PRICE_CLOSE, MODE_UPPER, 0);
-double Sale = iBands(NULL, 0, y, 2, 0, PRICE_CLOSE, MODE_LOWER, 0);
-double iStock = iBands(NULL, 0, y, 2, 0, PRICE_CLOSE, MODE_UPPER, 1);
-double iSale = iBands(NULL, 0, y, 2, 0, PRICE_CLOSE, MODE_LOWER, 1);
-double iopen = iOpen(Symbol(), 0, 2);
-double iPrice = iClose(Symbol(), 0, 2);
-double lPass = 0;
-if(Price < open) { lPass = Price; } else { lPass = open; }
-double ilPass = 0;
-if(iPrice < iopen) { ilPass = iPrice; } else { ilPass = iopen; }
-double kPass = 0;
-if(Price > open) { kPass = Price; } else { kPass = open; }
-double ikPass = 0;
-if(iPrice > iopen) { kPass = iPrice; } else { kPass = iopen; }
-
-// [EXECUTION LOGIC: ARC-LENGTH COHERENCE VALIDATION]
-// Final trade execution engine: validates s=r coherence before Kronecker-delta rule triggers entry/exit.
-// Implements non-Hermitian dynamics: irreversible decoherence when arc-length deviation exceeds manifold capacity.
-// Maps theoretical constructs to executable logic: every tick/bar update respects Φ-field topology.
-string fg = "";
-if(signal != 0) {
-    if(price >= signal + com) { Alert("Long:", price); if((count == 0) && (tally == "Sell")) { count++; } tally = "Buy"; }
-    if(price <= signal - com) { Alert("Short:", price); if((count == 0) && (tally == "Buy")) { count++; } tally = "Sell"; }
     
-    if(tickTock == false) {
-        // Bullish coherence validation: Price > signal AND (regime continuity OR boundary breakout with indicator confirmation).
-        if((((Price > signal) || (Price > ikPass) || (price > kPass))) && (((iC == Cc) && (Price > HH[min - (y + 1)])) || ((jC == Cc) && (Price >= LL[min - (y + 1)]) && (((open >= Stock) || (Price >= Stock)) || ((open >= iStock) || (Price >= iStock)))))) {
-            Alert("Buy:", price); if((toll == 0) && (tally == "Sell")) { toll++; } if(Price > signal) { fg = "Up"; } tally = "Buy";
-        }
-        // Bearish coherence validation: Price < signal AND (regime continuity OR boundary breakdown with indicator confirmation).
-        if((((Price < signal) || (Price < ilPass) || (price < lPass))) && (((jC == Cc) && (Price < LL[min - (y + 1)])) || ((iC == Cc) && (Price <= HH[min - (y + 1)]) && (((open <= Sale) || (Price <= Sale)) || ((open <= iSale) || (Price <= iSale)))))) {
-            Alert("Sell:", price); if((toll == 0) && (tally == "Buy")) { toll++; } if(Price < signal) { fg = "Down"; } tally = "Sell";
-        }
-        
-        // Kronecker-delta execution rule: δ(m-n-2)=1 triggers when imbalance condition met (m >= 12 or n >= 12 conservative approximation)
-        if((toll == 1) && ((tally == "Buy") || (fg == "Up"))) {
-            Alert("🔷", "Diamond", fg);
-            if(((prime == 0) || (dime == 0)) && (fg == "Up")) {
-                dime = 0; mem = 0;
-                if(((A == true) || (B == false)) && ((u == true) || (v == false))) { B(); if(C == true) { P(); } else { Q(); } Alert("Bull"); Top(); E = price; } else { B(); Alert("Bull"); Top(); E = price; }
-            } else if((dime != -1) && (prime == 0) && (fg == "") && (Price > signal)) {
-                dime = 0; mem = 0;
-                if(((A == true) || (B == false)) && ((u == true) || (v == false))) { B(); if(C == true) { P(); } else { Q(); } Alert("Bull"); Top(); E = price; } else { B(); Alert("Bull"); Top(); E = price; }
-            } else if(Price > signal) { B(); Alert("🥃", "Whisky"); Top(); E = price; } else { OnLog(); A(); Alert("🍷", "Wine"); Bott(); D = price; }
-            signal = 0; toll = 0; tally = ""; GF = true; signature = true;
-        }
-        // Bearish Kronecker-delta execution: symmetric logic for oversold imbalance (n >= 12)
-        if((toll == 1) && ((tally == "Sell") || (fg == "Down"))) {
-            Alert("🔻", "Ruby", fg);
-            if((fg == "Down") && ((prime == 1) || (dime == 1))) {
-                dime = 1; mem = 1;
-                if(((A == false) || (B == true)) && ((u == false) || (v == true))) { A(); if(C == false) { P(); } else { Q(); } Alert("Bear"); Bott(); D = price; } else { A(); Alert("Bear"); Bott(); D = price; }
-            } else if(((dime != -1) && (prime == 1)) && (fg == "") && (Price < signal)) {
-                dime = 1; mem = 1;
-                if(((A == false) || (B == true)) && ((u == false) || (v == true))) { A(); if(C == false) { P(); } else { Q(); } Alert("Bear"); Bott(); D = price; } else { A(); Alert("Bear"); Bott(); D = price; }
-            } else if(Price < signal) { A(); Alert("🍷", "Wine"); Bott(); D = price; } else { OnLog(); B(); Alert("🥃", "Whisky"); Top(); E = price; }
-            signal = 0; toll = 0; tally = ""; GF = true; signature = true;
-        }
-        // Count-based execution fallback: Secondary validation layer.
-        if((count == 1) && ((tally == "Buy") || (fg == "Up"))) {
-            Alert("🔷", "Diamond", fg);
-            if(((prime == 0) || (dime == 0)) && (fg == "Up")) {
-                dime = 0; mem = 0;
-                if(((A == true) || (B == false)) && ((u == true) || (v == false))) { B(); if(C == true) { P(); } else { Q(); } Alert("Hawk"); Top(); E = price; } else { B(); Alert("Hawk"); Top(); E = price; }
-            } else if(((dime != -1) && (prime == 0)) && (fg == "") && (Price > signal)) {
-                dime = 0; mem = 0;
-                if(((A == true) || (B == false)) && ((u == true) || (v == false))) { B(); if(C == true) { P(); } else { Q(); } Alert("Hawk"); Top(); E = price; } else { B(); Alert("Hawk"); Top(); E = price; }
-            } else if(Price > signal) { B(); Alert("💧", "Watter"); Top(); E = price; } else { OnLog(); A(); Alert("🩸", "Blood"); Bott(); D = price; }
-            count = 0; tally = ""; GF = true; signature = true;
-        }
-        if((count == 1) && ((tally == "Sell") || (fg == "Down"))) {
-            Alert("🔻", "Ruby", fg);
-            if((fg == "Down") && ((prime == 1) || (dime == 1))) {
-                dime = 1; mem = 1;
-                if(((A == false) || (B == true)) && ((u == false) || (v == true))) { A(); if(C == false) { P(); } else { Q(); } Alert("Dove"); Bott(); D = price; } else { A(); Alert("Dove"); Bott(); D = price; }
-            } else if(((dime != -1) && (prime == 1)) && (fg == "") && (Price < signal)) {
-                dime = 1; mem = 1;
-                if(((A == false) || (B == true)) && ((u == false) || (v == true))) { A(); if(C == false) { P(); } else { Q(); } Alert("Dove"); Bott(); D = price; } else { A(); Alert("Dove"); Bott(); D = price; }
-            } else if(Price < signal) { A(); Alert("🩸", "Blood"); Bott(); D = price; } else { OnLog(); B(); Alert("💧", "Watter"); Top(); E = price; }
-            count = 0; tally = ""; GF = true; signature = true;
-        }
-    }
-}
-
-// [BOUNDARY BREAKOUT/BOUNCEBACK EDGE CASES]
-// OnGaurd(): Leading passive inversion of binary logic based on KC (Keep Constant/Change Constant) principles.
-// Implements arc-length deviation detection: price crossing signal thresholds (E/D) triggers regime parity adaptation.
-// Maps to non-Hermitian jump operators L_k: binary inversion mirrors Φ-field phase transitions under perturbation.
-if((OnGaurd(-1)) && (KC == true)) {
-    if((h != 0) && (ab == false) && (U[O - (y + 1)] == true) && (O > 2) && (O != x - 1)) {
-        if(HH[O - (y + 1)] > Premium[O - (y + 1)]) {
-            h = O;
-            if((C == true) || (c == true)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, "O:", O, "\| ", C, ":", c); }
-            else if((C == false) && (c == false)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, "O:", O, "\| ", C, ":", c); }
-        }
-        if(LL[O - (y + 1)] < Discount[O - (y + 1)]) {
-            h = O;
-            if((C == true) || (c == true)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, "O:", O, "\| ", C, ":", c); }
-            else if((C == false) && (c == false)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, "O:", O, "\| ", C, ":", c); }
-        }
-    }
-    if((h != 0) && (ab == false) && (U[o - (y + 1)] == true) && (o > 2) && (o != x - 1)) {
-        if(HH[o - (y + 1)] > Premium[o - (y + 1)]) {
-            h = o;
-            if((C == false) && (c == false)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, "o:", o, "\| ", C, ":", c); }
-            else if((C == true) || (c == true)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, "o:", o, "\| ", C, ":", c); }
-        }
-        if(LL[o - (y + 1)] < Discount[o - (y + 1)]) {
-            h = o;
-            if((C == false) && (c == false)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, "o:", o, "\| ", C, ":", c); }
-            else if((C == true) || (c == true)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, "o:", o, "\| ", C, ":", c); }
+    // [LOCAL VARIABLES & BOUNDARY PASS CONDITIONS]
+    // Stock/Sale: Bollinger Band upper/lower boundaries at period y (short-term regime anchor).
+    // These represent the topological boundaries of the coherent subspace for the current tick.
+    // lPass/kPass: Passive inversion thresholds for price direction validation (arc-length deviation check).
+    double Stock = iBands(NULL, 0, y, 2, 0, PRICE_CLOSE, MODE_UPPER, 0);
+    double Sale = iBands(NULL, 0, y, 2, 0, PRICE_CLOSE, MODE_LOWER, 0);
+    double iStock = iBands(NULL, 0, y, 2, 0, PRICE_CLOSE, MODE_UPPER, 1);
+    double iSale = iBands(NULL, 0, y, 2, 0, PRICE_CLOSE, MODE_LOWER, 1);
+    double iopen = iOpen(Symbol(), 0, 2);
+    double iPrice = iClose(Symbol(), 0, 2);
+    double lPass = 0;
+    if(Price < open) { lPass = Price; } else { lPass = open; }
+    double ilPass = 0;
+    if(iPrice < iopen) { ilPass = iPrice; } else { ilPass = iopen; }
+    double kPass = 0;
+    if(Price > open) { kPass = Price; } else { kPass = open; }
+    double ikPass = 0;
+    if(iPrice > iopen) { kPass = iPrice; } else { kPass = iopen; }
+    
+    // [EXECUTION LOGIC: ARC-LENGTH COHERENCE VALIDATION]
+    // Final trade execution engine: validates s=r coherence before Kronecker-delta rule triggers entry/exit.
+    // Implements non-Hermitian dynamics: irreversible decoherence when arc-length deviation exceeds manifold capacity.
+    // Maps theoretical constructs to executable logic: every tick/bar update respects Φ-field topology.
+    string fg = "";
+    if(signal != 0) {
+        if(price >= signal + com) { Alert("Long:", price); if((count == 0) && (tally == "Sell")) { count++; } tally = "Buy"; }
+        if(price <= signal - com) { Alert("Short:", price); if((count == 0) && (tally == "Buy")) { count++; } tally = "Sell"; }
+        if(tickTock == false) {
+            // Bullish coherence validation: Price > signal AND (regime continuity OR boundary breakout with indicator confirmation).
+            if((((Price > signal) || (Price > ikPass) || (price > kPass))) && (((iC == Cc) && (Price > HH[min - (y + 1)])) || ((jC == Cc) && (Price >= LL[min - (y + 1)]) && (((open >= Stock) || (Price >= Stock)) || ((open >= iStock) || (Price >= iStock)))))) {
+                Alert("Buy:", price); if((toll == 0) && (tally == "Sell")) { toll++; } if(Price > signal) { fg = "Up"; } tally = "Buy";
+            }
+            // Bearish coherence validation: Price < signal AND (regime continuity OR boundary breakdown with indicator confirmation).
+            if((((Price < signal) || (Price < ilPass) || (price < lPass))) && (((jC == Cc) && (Price < LL[min - (y + 1)])) || ((iC == Cc) && (Price <= HH[min - (y + 1)]) && (((open <= Sale) || (Price <= Sale)) || ((open <= iSale) || (Price <= iSale)))))) {
+                Alert("Sell:", price); if((toll == 0) && (tally == "Buy")) { toll++; } if(Price < signal) { fg = "Down"; } tally = "Sell";
+            }
+            // Kronecker-delta execution rule: δ(m-n-2)=1 triggers when imbalance condition met (m >= 12 or n >= 12 conservative approximation)
+            if((toll == 1) && ((tally == "Buy") || (fg == "Up"))) {
+                Alert("🔷", "Diamond", fg);
+                if(((prime == 0) || (dime == 0)) && (fg == "Up")) {
+                    dime = 0; mem = 0;
+                    if(((A == true) || (B == false)) && ((u == true) || (v == false))) { B(); if(C == true) { P(); } else { Q(); } Alert("Bull"); Top(); E = price; } else { B(); Alert("Bull"); Top(); E = price; }
+                } else if((dime != -1) && (prime == 0) && (fg == "") && (Price > signal)) {
+                    dime = 0; mem = 0;
+                    if(((A == true) || (B == false)) && ((u == true) || (v == false))) { B(); if(C == true) { P(); } else { Q(); } Alert("Bull"); Top(); E = price; } else { B(); Alert("Bull"); Top(); E = price; }
+                } else if(Price > signal) { B(); Alert("🥃", "Whisky"); Top(); E = price; } else { OnLog(); A(); Alert("🍷", "Wine"); Bott(); D = price; }
+                signal = 0; toll = 0; tally = ""; GF = true; signature = true;
+            }
+            // Bearish Kronecker-delta execution: symmetric logic for oversold imbalance (n >= 12)
+            if((toll == 1) && ((tally == "Sell") || (fg == "Down"))) {
+                Alert("🔻", "Ruby", fg);
+                if((fg == "Down") && ((prime == 1) || (dime == 1))) {
+                    dime = 1; mem = 1;
+                    if(((A == false) || (B == true)) && ((u == false) || (v == true))) { A(); if(C == false) { P(); } else { Q(); } Alert("Bear"); Bott(); D = price; } else { A(); Alert("Bear"); Bott(); D = price; }
+                } else if(((dime != -1) && (prime == 1)) && (fg == "") && (Price < signal)) {
+                    dime = 1; mem = 1;
+                    if(((A == false) || (B == true)) && ((u == false) || (v == true))) { A(); if(C == false) { P(); } else { Q(); } Alert("Bear"); Bott(); D = price; } else { A(); Alert("Bear"); Bott(); D = price; }
+                } else if(Price < signal) { A(); Alert("🍷", "Wine"); Bott(); D = price; } else { OnLog(); B(); Alert("🥃", "Whisky"); Top(); E = price; }
+                signal = 0; toll = 0; tally = ""; GF = true; signature = true;
+            }
+            // Count-based execution fallback: Secondary validation layer.
+            if((count == 1) && ((tally == "Buy") || (fg == "Up"))) {
+                Alert("🔷", "Diamond", fg);
+                if(((prime == 0) || (dime == 0)) && (fg == "Up")) {
+                    dime = 0; mem = 0;
+                    if(((A == true) || (B == false)) && ((u == true) || (v == false))) { B(); if(C == true) { P(); } else { Q(); } Alert("Hawk"); Top(); E = price; } else { B(); Alert("Hawk"); Top(); E = price; }
+                } else if(((dime != -1) && (prime == 0)) && (fg == "") && (Price > signal)) {
+                    dime = 0; mem = 0;
+                    if(((A == true) || (B == false)) && ((u == true) || (v == false))) { B(); if(C == true) { P(); } else { Q(); } Alert("Hawk"); Top(); E = price; } else { B(); Alert("Hawk"); Top(); E = price; }
+                } else if(Price > signal) { B(); Alert("💧", "Watter"); Top(); E = price; } else { OnLog(); A(); Alert("🩸", "Blood"); Bott(); D = price; }
+                count = 0; tally = ""; GF = true; signature = true;
+            }
+            if((count == 1) && ((tally == "Sell") || (fg == "Down"))) {
+                Alert("🔻", "Ruby", fg);
+                if((fg == "Down") && ((prime == 1) || (dime == 1))) {
+                    dime = 1; mem = 1;
+                    if(((A == false) || (B == true)) && ((u == false) || (v == true))) { A(); if(C == false) { P(); } else { Q(); } Alert("Dove"); Bott(); D = price; } else { A(); Alert("Dove"); Bott(); D = price; }
+                } else if(((dime != -1) && (prime == 1)) && (fg == "") && (Price < signal)) {
+                    dime = 1; mem = 1;
+                    if(((A == false) || (B == true)) && ((u == false) || (v == true))) { A(); if(C == false) { P(); } else { Q(); } Alert("Dove"); Bott(); D = price; } else { A(); Alert("Dove"); Bott(); D = price; }
+                } else if(Price < signal) { A(); Alert("🩸", "Blood"); Bott(); D = price; } else { OnLog(); B(); Alert("💧", "Watter"); Top(); E = price; }
+                count = 0; tally = ""; GF = true; signature = true;
+            }
         }
     }
-} else if(OnGaurd(-1) != KC) {
-    if((h != 0) && (ab == false) && (U[O - (y + 1)] == true) && (O > 2) && (O != x - 1)) {
-        if(HH[O - (y + 1)] > Premium[O - (y + 1)]) {
-            h = O;
-            if((C == false) || (c == false)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, "O:", O, "\| ", C, ":", c); }
-            else if((C == true) && (c == true)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, "O:", O, "\| ", C, ":", c); }
-        }
-        if(LL[O - (y + 1)] < Discount[O - (y + 1)]) {
-            h = O;
-            if((C == false) || (c == false)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, "O:", O, "\| ", C, ":", c); }
-            else if((C == true) && (c == true)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, "O:", O, "\| ", C, ":", c); }
-        }
-    }
-    if((h != 0) && (ab == false) && (U[o - (y + 1)] == true) && (o > 2) && (o != x - 1)) {
-        if(HH[o - (y + 1)] > Premium[o - (y + 1)]) {
-            h = o;
-            if((C == true) && (c == true)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, "o:", o, "\| ", C, ":", c); }
-            else if((C == false) || (c == false)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, "o:", o, "\| ", C, ":", c); }
-        }
-        if(LL[o - (y + 1)] < Discount[o - (y + 1)]) {
-            h = o;
-            if((C == true) && (c == true)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, "o:", o, "\| ", C, ":", c); }
-            else if((C == false) || (c == false)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, "o:", o, "\| ", C, ":", c); }
-        }
-    }
-}
-
-// Complex edge case resolution: Multi-scale indicator convergence at support/resistance boundaries.
-// Validates arc-length coherence across nested temporal derivatives (iz, iO, iw, io).
-if((h != 0) && (signal != 0) && (ab == ba)) {
+    
+    // [BOUNDARY BREAKOUT/BOUNCEBACK EDGE CASES]
+    // OnGaurd(): Leading passive inversion of binary logic based on KC (Keep Constant/Change Constant) principles.
+    // Implements arc-length deviation detection: price crossing signal thresholds (E/D) triggers regime parity adaptation.
+    // Maps to non-Hermitian jump operators L_k: binary inversion mirrors Φ-field phase transitions under perturbation.
     if((OnGaurd(-1)) && (KC == true)) {
-        if((iz >= h) && (iz > 2) && (((iZ > 2) && ((iZ == iz) || (iZ == iz + h) || ((iZ == iz + io) && (l[io - (y + 1)] == false)))) || ((I > 2) && ((I == iz) || (I == iz + h) || ((I == iz + io) && (l[io - (y + 1)] == false))))) && (k[iz - (y + 1)] == false)) {
-            h = iz;
-            if((C == false) && (c == false)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, " h:", h, "iZ:", iZ, "I:", I, "\|=iz:", iz, "\| ", C); }
-            else if((C == true) || (c == true)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, " h:", h, "iZ:", iZ, "I:", I, "\|=iz:", iz, "\| ", C); }
-        } else if((iO >= h) && (iO > 2) && (((iZ > 2) && ((iZ == iO) || (iZ == iO + h) || ((iZ == iO + io) && (l[io - (y + 1)] == false)))) || ((I > 2) && ((I == iO) || (I == iO + h) || ((I == iO + io) && (l[io - (y + 1)] == false))))) && (k[iO - (y + 1)] == false)) {
-            h = iO;
-            if((C == false) && (c == false)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, " h:", h, "o:", o, "iZ:", iZ, "I:", I, "\|=iO:", iO, "\| ", C); }
-            if((C == true) || (c == true)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, " h:", h, "o:", o, "iZ:", iZ, "I:", I, "\|=iO:", iO, "\| ", C); }
+        if((h != 0) && (ab == false) && (U[O - (y + 1)] == true) && (O > 2) && (O != x - 1)) {
+            if(HH[O - (y + 1)] > Premium[O - (y + 1)]) {
+                h = O;
+                if((C == true) || (c == true)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, "O:", O, "| ", C, ":", c); }
+                else if((C == false) && (c == false)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, "O:", O, "| ", C, ":", c); }
+            }
+            if(LL[O - (y + 1)] < Discount[O - (y + 1)]) {
+                h = O;
+                if((C == true) || (c == true)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, "O:", O, "| ", C, ":", c); }
+                else if((C == false) && (c == false)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, "O:", O, "| ", C, ":", c); }
+            }
         }
-        if((iw >= h) && (iw > 2) && (((iW > 2) && ((iW == iw) || (iW == iw + h) || ((iW == iw + io) && (l[io - (y + 1)] == false)))) || ((I > 2) && ((I == iw) || (I == iw + h) || ((I == iw + io) && (l[io - (y + 1)] == false))))) && (l[iw - (y + 1)] == false)) {
-            h = iw;
-            if((C == false) && (c == false)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, " h:", h, "iW:", iW, "I:", I, "\|=iw:", iw, "\| ", C); }
-            else if((C == true) || (c == true)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, " h:", h, "iW:", iW, "I:", I, "\|=iw:", iw, "\| ", C); }
-        } else if((iO >= h) && (iO > 2) && (((iW > 2) && ((iW == iO) || (iW == iO + h) || ((iW == iO + io) && (l[io - (y + 1)] == false)))) || ((I > 2) && ((I == iO) || (I == iO + h) || ((I == iO + io) && (l[io - (y + 1)] == false))))) && (l[iO - (y + 1)] == false)) {
-            h = iO;
-            if((C == false) && (c == false)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, " h:", h, "o:", o, "iW:", iW, "I:", I, "\|=iO:", iO, "\| ", C); }
-            else if((C == true) || (c == true)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, " h:", h, "o:", o, "iW:", iW, "I:", I, "\|=iO:", iO, "\| ", C); }
+        if((h != 0) && (ab == false) && (U[o - (y + 1)] == true) && (o > 2) && (o != x - 1)) {
+            if(HH[o - (y + 1)] > Premium[o - (y + 1)]) {
+                h = o;
+                if((C == false) && (c == false)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, "o:", o, "| ", C, ":", c); }
+                else if((C == true) || (c == true)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, "o:", o, "| ", C, ":", c); }
+            }
+            if(LL[o - (y + 1)] < Discount[o - (y + 1)]) {
+                h = o;
+                if((C == false) && (c == false)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, "o:", o, "| ", C, ":", c); }
+                else if((C == true) || (c == true)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, "o:", o, "| ", C, ":", c); }
+            }
         }
     } else if(OnGaurd(-1) != KC) {
-        if((iz >= h) && (iz > 2) && (((iZ > 2) && ((iZ == iz) || (iZ == iz + h) || ((iZ == iz + io) && (l[io - (y + 1)] == false)))) || ((I > 2) && ((I == iz) || (I == iz + h) || ((I == iz + io) && (l[io - (y + 1)] == false))))) && (k[iz - (y + 1)] == false)) {
-            h = iz;
-            if((C == true) && (c == true)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, " h:", h, "iZ:", iZ, "I:", I, "\|=iz:", iz, "\| ", C); }
-            else if((C == false) || (c == false)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, " h:", h, "iZ:", iZ, "I:", I, "\|=iz:", iz, "\| ", C); }
-        } else if((iO >= h) && (iO > 2) && (((iZ > 2) && ((iZ == iO) || (iZ == iO + h) || ((iZ == iO + io) && (l[io - (y + 1)] == false)))) || ((I > 2) && ((I == iO) || (I == iO + h) || ((I == iO + io) && (l[io - (y + 1)] == false))))) && (k[iO - (y + 1)] == false)) {
-            h = iO;
-            if((C == true) && (c == true)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, " h:", h, "o:", o, "iZ:", iZ, "I:", I, "\|=iO:", iO, "\| ", C); }
-            if((C == false) || (c == false)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, " h:", h, "o:", o, "iZ:", iZ, "I:", I, "\|=iO:", iO, "\| ", C); }
+        if((h != 0) && (ab == false) && (U[O - (y + 1)] == true) && (O > 2) && (O != x - 1)) {
+            if(HH[O - (y + 1)] > Premium[O - (y + 1)]) {
+                h = O;
+                if((C == false) || (c == false)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, "O:", O, "| ", C, ":", c); }
+                else if((C == true) && (c == true)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, "O:", O, "| ", C, ":", c); }
+            }
+            if(LL[O - (y + 1)] < Discount[O - (y + 1)]) {
+                h = O;
+                if((C == false) || (c == false)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, "O:", O, "| ", C, ":", c); }
+                else if((C == true) && (c == true)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, "O:", O, "| ", C, ":", c); }
+            }
         }
-        if((iw >= h) && (iw > 2) && (((iW > 2) && ((iW == iw) || (iW == iw + h) || ((iW == iw + io) && (l[io - (y + 1)] == false)))) || ((I > 2) && ((I == iw) || (I == iw + h) || ((I == iw + io) && (l[io - (y + 1)] == false))))) && (l[iw - (y + 1)] == false)) {
-            h = iw;
-            if((C == true) && (c == true)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, " h:", h, "iW:", iW, "I:", I, "\|=iw:", iw, "\| ", C); }
-            else if((C == false) || (c == false)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, " h:", h, "iW:", iW, "I:", I, "\|=iw:", iw, "\| ", C); }
-        } else if((iO >= h) && (iO > 2) && (((iW > 2) && ((iW == iO) || (iW == iO + h) || ((iW == iO + io) && (l[io - (y + 1)] == false)))) || ((I > 2) && ((I == iO) || (I == iO + h) || ((I == iO + io) && (l[io - (y + 1)] == false))))) && (l[iO - (y + 1)] == false)) {
-            h = iO;
-            if((C == true) && (c == true)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, " h:", h, "o:", o, "iW:", iW, "I:", I, "\|=iO:", iO, "\| ", C); }
-            else if((C == false) || (c == false)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, " h:", h, "o:", o, "iW:", iW, "I:", I, "\|=iO:", iO, "\| ", C); }
+        if((h != 0) && (ab == false) && (U[o - (y + 1)] == true) && (o > 2) && (o != x - 1)) {
+            if(HH[o - (y + 1)] > Premium[o - (y + 1)]) {
+                h = o;
+                if((C == true) && (c == true)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, "o:", o, "| ", C, ":", c); }
+                else if((C == false) || (c == false)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, "o:", o, "| ", C, ":", c); }
+            }
+            if(LL[o - (y + 1)] < Discount[o - (y + 1)]) {
+                h = o;
+                if((C == true) && (c == true)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, "o:", o, "| ", C, ":", c); }
+                else if((C == false) || (c == false)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, "o:", o, "| ", C, ":", c); }
+            }
         }
     }
-    tick++;
-    if(ab != ba) { ab = ba; }
-    tickTock = false;
+    
+    // Complex edge case resolution: Multi-scale indicator convergence at support/resistance boundaries.
+    // Validates arc-length coherence across nested temporal derivatives (iz, iO, iw, io).
+    if((h != 0) && (signal != 0) && (ab == ba)) {
+        if((OnGaurd(-1)) && (KC == true)) {
+            if((iz >= h) && (iz > 2) && (((iZ > 2) && ((iZ == iz) || (iZ == iz + h) || ((iZ == iz + io) && (l[io - (y + 1)] == false)))) || ((I > 2) && ((I == iz) || (I == iz + h) || ((I == iz + io) && (l[io - (y + 1)] == false))))) && (k[iz - (y + 1)] == false)) {
+                h = iz;
+                if((C == false) && (c == false)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, " h:", h, "iZ:", iZ, "I:", I, "|=iz:", iz, "| ", C); }
+                else if((C == true) || (c == true)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, " h:", h, "iZ:", iZ, "I:", I, "|=iz:", iz, "| ", C); }
+            } else if((iO >= h) && (iO > 2) && (((iZ > 2) && ((iZ == iO) || (iZ == iO + h) || ((iZ == iO + io) && (l[io - (y + 1)] == false)))) || ((I > 2) && ((I == iO) || (I == iO + h) || ((I == iO + io) && (l[io - (y + 1)] == false))))) && (k[iO - (y + 1)] == false)) {
+                h = iO;
+                if((C == false) && (c == false)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, " h:", h, "o:", o, "iZ:", iZ, "I:", I, "|=iO:", iO, "| ", C); }
+                if((C == true) || (c == true)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, " h:", h, "o:", o, "iZ:", iZ, "I:", I, "|=iO:", iO, "| ", C); }
+            }
+            if((iw >= h) && (iw > 2) && (((iW > 2) && ((iW == iw) || (iW == iw + h) || ((iW == iw + io) && (l[io - (y + 1)] == false)))) || ((I > 2) && ((I == iw) || (I == iw + h) || ((I == iw + io) && (l[io - (y + 1)] == false))))) && (l[iw - (y + 1)] == false)) {
+                h = iw;
+                if((C == false) && (c == false)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, " h:", h, "iW:", iW, "I:", I, "|=iw:", iw, "| ", C); }
+                else if((C == true) || (c == true)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, " h:", h, "iW:", iW, "I:", I, "|=iw:", iw, "| ", C); }
+            } else if((iO >= h) && (iO > 2) && (((iW > 2) && ((iW == iO) || (iW == iO + h) || ((iW == iO + io) && (l[io - (y + 1)] == false)))) || ((I > 2) && ((I == iO) || (I == iO + h) || ((I == iO + io) && (l[io - (y + 1)] == false))))) && (l[iO - (y + 1)] == false)) {
+                h = iO;
+                if((C == false) && (c == false)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, " h:", h, "o:", o, "iW:", iW, "I:", I, "|=iO:", iO, "| ", C); }
+                else if((C == true) || (c == true)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, " h:", h, "o:", o, "iW:", iW, "I:", I, "|=iO:", iO, "| ", C); }
+            }
+        } else if(OnGaurd(-1) != KC) {
+            if((iz >= h) && (iz > 2) && (((iZ > 2) && ((iZ == iz) || (iZ == iz + h) || ((iZ == iz + io) && (l[io - (y + 1)] == false)))) || ((I > 2) && ((I == iz) || (I == iz + h) || ((I == iz + io) && (l[io - (y + 1)] == false))))) && (k[iz - (y + 1)] == false)) {
+                h = iz;
+                if((C == true) && (c == true)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, " h:", h, "iZ:", iZ, "I:", I, "|=iz:", iz, "| ", C); }
+                else if((C == false) || (c == false)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, " h:", h, "iZ:", iZ, "I:", I, "|=iz:", iz, "| ", C); }
+            } else if((iO >= h) && (iO > 2) && (((iZ > 2) && ((iZ == iO) || (iZ == iO + h) || ((iZ == iO + io) && (l[io - (y + 1)] == false)))) || ((I > 2) && ((I == iO) || (I == iO + h) || ((I == iO + io) && (l[io - (y + 1)] == false))))) && (k[iO - (y + 1)] == false)) {
+                h = iO;
+                if((C == true) && (c == true)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, " h:", h, "o:", o, "iZ:", iZ, "I:", I, "|=iO:", iO, "| ", C); }
+                if((C == false) || (c == false)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, " h:", h, "o:", o, "iZ:", iZ, "I:", I, "|=iO:", iO, "| ", C); }
+            }
+            if((iw >= h) && (iw > 2) && (((iW > 2) && ((iW == iw) || (iW == iw + h) || ((iW == iw + io) && (l[io - (y + 1)] == false)))) || ((I > 2) && ((I == iw) || (I == iw + h) || ((I == iw + io) && (l[io - (y + 1)] == false))))) && (l[iw - (y + 1)] == false)) {
+                h = iw;
+                if((C == true) && (c == true)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, " h:", h, "iW:", iW, "I:", I, "|=iw:", iw, "| ", C); }
+                else if((C == false) || (c == false)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, " h:", h, "iW:", iW, "I:", I, "|=iw:", iw, "| ", C); }
+            } else if((iO >= h) && (iO > 2) && (((iW > 2) && ((iW == iO) || (iW == iO + h) || ((iW == iO + io) && (l[io - (y + 1)] == false)))) || ((I > 2) && ((I == iO) || (I == iO + h) || ((I == iO + io) && (l[io - (y + 1)] == false))))) && (l[iO - (y + 1)] == false)) {
+                h = iO;
+                if((C == true) && (c == true)) { G(); Signal(); tickTock = true; tag = 0; dime = mem; Alert("Sin.", price, " h:", h, "o:", o, "iW:", iW, "I:", I, "|=iO:", iO, "| ", C); }
+                else if((C == false) || (c == false)) { G(); Signal(); tickTock = true; tag = 1; dime = mem; Alert("Sine.", price, " h:", h, "o:", o, "iW:", iW, "I:", I, "|=iO:", iO, "| ", C); }
+            }
+        }
+        tick++;
+        if(ab != ba) { ab = ba; }
+        tickTock = false;
+    }
 }
 
 // [FINAL REVERSAL SIGNAL TRIGGERS: ONGOE() & ONTOE()]
@@ -14706,29 +14719,29 @@ void OnGoe() {
         if((OnGaurd(0)) && (KC == true)) {
             if(((h == io) && (z > o)) || ((h == iO) && (Z > O)) || ((h == iz) && (Z > z)) || ((h == iZ) && (Z < z))) {
                 if((C == false) && (c == false)) {
-                    prime = 1; G(); Signal(); tickTock = true; tag = 1; Alert("Sign.", price, " h:", h, "\| ", "Z:", iZ, "z:", iz, "O:", iO, "o:", io, "\| ", C, ":", c);
+                    prime = 1; G(); Signal(); tickTock = true; tag = 1; Alert("Sign.", price, " h:", h, "| ", "Z:", iZ, "z:", iz, "O:", iO, "o:", io, "| ", C, ":", c);
                 } else {
-                    prime = 1; G(); Signal(); tickTock = true; tag = 1; Alert("Sig.", price, " h:", h, "\| ", "Z:", iZ, "z:", iz, "O:", iO, "o:", io, "\| ", C, ":", c);
+                    prime = 1; G(); Signal(); tickTock = true; tag = 1; Alert("Sig.", price, " h:", h, "| ", "Z:", iZ, "z:", iz, "O:", iO, "o:", io, "| ", C, ":", c);
                 }
             } else if(((h == io) || (h == iZ) || (h == iz) || (h == iO))) {
                 if((C == false) && (c == false)) {
-                    prime = 1; G(); Signal(); tickTock = true; tag = 1; Alert("Sig.", price, " h:", h, "Z:", iZ, "z:", iz, "O:", iO, "o:", io, "\| ", C, ":", c);
+                    prime = 1; G(); Signal(); tickTock = true; tag = 1; Alert("Sig.", price, " h:", h, "Z:", iZ, "z:", iz, "O:", iO, "o:", io, "| ", C, ":", c);
                 } else {
-                    prime = 1; G(); Signal(); tickTock = true; tag = 1; Alert("Sign.", price, " h:", h, "Z:", iZ, "z:", iz, "O:", iO, "o:", io, "\| ", C, ":", c);
+                    prime = 1; G(); Signal(); tickTock = true; tag = 1; Alert("Sign.", price, " h:", h, "Z:", iZ, "z:", iz, "O:", iO, "o:", io, "| ", C, ":", c);
                 }
             }
         } else if(OnGaurd(0) != KC) {
             if(((h == io) && (z > o)) || ((h == iO) && (Z > O)) || ((h == iz) && (Z > z)) || ((h == iZ) && (Z < z))) {
                 if((C == false) || (c == false)) {
-                    prime = 1; G(); Signal(); tickTock = true; tag = 1; Alert("Sign.", price, " h:", h, "\| ", "Z:", iZ, "z:", iz, "O:", iO, "o:", io, "\| ", C, ":", c);
+                    prime = 1; G(); Signal(); tickTock = true; tag = 1; Alert("Sign.", price, " h:", h, "| ", "Z:", iZ, "z:", iz, "O:", iO, "o:", io, "| ", C, ":", c);
                 } else {
-                    prime = 1; G(); Signal(); tickTock = true; tag = 1; Alert("Sig.", price, " h:", h, "\| ", "Z:", iZ, "z:", iz, "O:", iO, "o:", io, "\| ", C, ":", c);
+                    prime = 1; G(); Signal(); tickTock = true; tag = 1; Alert("Sig.", price, " h:", h, "| ", "Z:", iZ, "z:", iz, "O:", iO, "o:", io, "| ", C, ":", c);
                 }
             } else if(((h == io) || (h == iZ) || (h == iz) || (h == iO))) {
                 if((C == false) || (c == false)) {
-                    prime = 1; G(); Signal(); tickTock = true; tag = 1; Alert("Sig.", price, " h:", h, "Z:", iZ, "z:", iz, "O:", iO, "o:", io, "\| ", C, ":", c);
+                    prime = 1; G(); Signal(); tickTock = true; tag = 1; Alert("Sig.", price, " h:", h, "Z:", iZ, "z:", iz, "O:", iO, "o:", io, "| ", C, ":", c);
                 } else {
-                    prime = 1; G(); Signal(); tickTock = true; tag = 1; Alert("Sign.", price, " h:", h, "Z:", iZ, "z:", iz, "O:", iO, "o:", io, "\| ", C, ":", c);
+                    prime = 1; G(); Signal(); tickTock = true; tag = 1; Alert("Sign.", price, " h:", h, "Z:", iZ, "z:", iz, "O:", iO, "o:", io, "| ", C, ":", c);
                 }
             }
             KC();
@@ -14744,29 +14757,29 @@ void OnToe() {
         if((OnGaurd(0)) && (KC == true)) {
             if(((h == io) && (w > o)) || ((h == iO) && (W > O)) || ((h == iw) && (W > w)) || ((h == iW) && (W < w))) {
                 if((C == false) && (c == false)) {
-                    prime = 0; G(); Signal(); tickTock = true; tag = 0; Alert("Sig.", price, " h:", h, " W<w ", "\| ", "W:", iW, "w:", iw, "O:", iO, "o:", io, "\| ", C, ":", c);
+                    prime = 0; G(); Signal(); tickTock = true; tag = 0; Alert("Sig.", price, " h:", h, " W<w ", "| ", "W:", iW, "w:", iw, "O:", iO, "o:", io, "| ", C, ":", c);
                 } else {
-                    prime = 0; G(); Signal(); tickTock = true; tag = 0; Alert("Sign.", price, " h:", h, " W<w ", "\| ", "W:", iW, "w:", iw, "O:", iO, "o:", io, "\| ", C, ":", c);
+                    prime = 0; G(); Signal(); tickTock = true; tag = 0; Alert("Sign.", price, " h:", h, " W<w ", "| ", "W:", iW, "w:", iw, "O:", iO, "o:", io, "| ", C, ":", c);
                 }
             } else if(((h == io) || (h == iW) || (h == iw) || (h == iO))) {
                 if((C == false) && (c == false)) {
-                    prime = 0; G(); Signal(); tickTock = true; tag = 0; Alert("Sign.", price, " h:", h, "W:", iW, "w:", iw, "O:", iO, "o:", io, "\| ", C, ":", c);
+                    prime = 0; G(); Signal(); tickTock = true; tag = 0; Alert("Sign.", price, " h:", h, "W:", iW, "w:", iw, "O:", iO, "o:", io, "| ", C, ":", c);
                 } else {
-                    prime = 0; G(); Signal(); tickTock = true; tag = 0; Alert("Sig.", price, " h:", h, "W:", iW, "w:", iw, "O:", iO, "o:", io, "\| ", C, ":", c);
+                    prime = 0; G(); Signal(); tickTock = true; tag = 0; Alert("Sig.", price, " h:", h, "W:", iW, "w:", iw, "O:", iO, "o:", io, "| ", C, ":", c);
                 }
             }
         } else if(OnGaurd(0) != KC) {
             if(((h == io) && (w > o)) || ((h == iO) && (W > O)) || ((h == iw) && (W > w)) || ((h == iW) && (W < w))) {
                 if((C == false) || (c == false)) {
-                    prime = 0; G(); Signal(); tickTock = true; tag = 0; Alert("Sig.", price, " h:", h, " W<w ", "\| ", "W:", iW, "w:", iw, "O:", iO, "o:", io, "\| ", C, ":", c);
+                    prime = 0; G(); Signal(); tickTock = true; tag = 0; Alert("Sig.", price, " h:", h, " W<w ", "| ", "W:", iW, "w:", iw, "O:", iO, "o:", io, "| ", C, ":", c);
                 } else {
-                    prime = 0; G(); Signal(); tickTock = true; tag = 0; Alert("Sign.", price, " h:", h, " W<w ", "\| ", "W:", iW, "w:", iw, "O:", iO, "o:", io, "\| ", C, ":", c);
+                    prime = 0; G(); Signal(); tickTock = true; tag = 0; Alert("Sign.", price, " h:", h, " W<w ", "| ", "W:", iW, "w:", iw, "O:", iO, "o:", io, "| ", C, ":", c);
                 }
             } else if(((h == io) || (h == iW) || (h == iw) || (h == iO))) {
                 if((C == false) || (c == false)) {
-                    prime = 0; G(); Signal(); tickTock = true; tag = 0; Alert("Sign.", price, " h:", h, "W:", iW, "w:", iw, "O:", iO, "o:", io, "\| ", C, ":", c);
+                    prime = 0; G(); Signal(); tickTock = true; tag = 0; Alert("Sign.", price, " h:", h, "W:", iW, "w:", iw, "O:", iO, "o:", io, "| ", C, ":", c);
                 } else {
-                    prime = 0; G(); Signal(); tickTock = true; tag = 0; Alert("Sig.", price, " h:", h, "W:", iW, "w:", iw, "O:", iO, "o:", io, "\| ", C, ":", c);
+                    prime = 0; G(); Signal(); tickTock = true; tag = 0; Alert("Sig.", price, " h:", h, "W:", iW, "w:", iw, "O:", iO, "o:", io, "| ", C, ":", c);
                 }
             }
             KC();
@@ -14858,7 +14871,6 @@ void OnTick() {
     open = iOpen(Symbol(), 0, 1);
     iH = iHigh(Symbol(), 0, 1);
     iL = iLow(Symbol(), 0, 1);
-    
     // [FAIR VALUE GAP TRACKING: TOPOLOGICAL VISUALIZATION MAINTENANCE]
     if(FVG >= 0) {
         for(int ii = 0; ii < FVG; ii++) {
@@ -14870,7 +14882,6 @@ void OnTick() {
             }
         }
     }
-    
     // [INITIALIZATION PHASE: UNIT PHASE MANIFOLD RESET ON FIRST EXECUTION]
     if(FG == false) {
         if(signature == false) { D = price; E = price; }
@@ -14879,21 +14890,16 @@ void OnTick() {
         for(j = y + 1; j < x; j++) { F(); }
         FG = true;
     }
-    
     // [RISK MANAGEMENT UPDATE: TRAILING STOP AND PROFIT TRACKING]
     T();
-    
     // [REGIME CLASSIFICATION: ON-BAR STATE EVALUATION]
     OnPoint();
     O(iO, O, J, C, Cc); O(io, o, iJ, c, cC);
-    
     // [OBSERVER LAYER: MACROSCOPIC MEASUREMENT APPARATUS]
     OnCall();
     J();
-    
     // [BAR-BY-BAR REGIME RECLASSIFICATION: EDGE CASE EVALUATION]
     if(is != t) { OnBar(); O(iO, O, J, C, Cc); O(io, o, iJ, c, cC); }
-    
     // [DOWNSIDE EXTREMUM SCANNING: ONSTAND() ACTIVATION]
     if((J == y + 1) && (J != 2)) {
         OnStand(); J(); O(iO, O, J, C, Cc); O(io, o, iJ, c, cC);
@@ -14904,7 +14910,6 @@ void OnTick() {
         else if((io != 2) && (iJ < io)) { j = min + 1; o = j; if(is != t) { if(OnFire(j, "Stable", "tRange")) { F(); Regime[j - (y + 1)] = "tRange"; } } else { Regime[j - (y + 1)] = "sRange"; } }
         else { j = 2; o = j; if(is != t) { if(OnFire(j, "Stable", "tRange")) { F(); Regime[j - (y + 1)] = "tRange"; } } else { Regime[j - (y + 1)] = "sRange"; } }
     }
-    
     // [UPSIDE EXTREMUM SCANNING: ONTRACK() ACTIVATION]
     if(J == x - 1) {
         OnTrack(); J(); O(iO, O, J, C, Cc); O(io, o, iJ, c, cC);
@@ -14915,9 +14920,7 @@ void OnTick() {
         else if((io != 4 * max) && (iJ < io)) { j = max; o = j; if(is != t) { if(OnFire(j, "Stable", "tRange")) { F(); Regime[j - (y + 1)] = "tRange"; } } else { Regime[j - (y + 1)] = "sRange"; } }
         else { j = x - 1; o = j; if(is != t) { if(OnFire(j, "Stable", "tRange")) { F(); Regime[j - (y + 1)] = "tRange"; } } else { Regime[j - (y + 1)] = "sRange"; } }
     }
-    
     t = is;
-    
     // [REVERSAL SIGNAL TRIGGERING: BEARISH DIRECTION (OnGoe())]
     if(Z != x - 1) {
         if((Z != y + 1) && (k[iZ - (y + 1)] == true)) { h = iZ; OnGoe(); }
@@ -14925,7 +14928,6 @@ void OnTick() {
         else if((k[io - (y + 1)] == true) && (o != y + 1) && (o != x - 1)) { h = io; OnGoe(); }
         else if((k[iO - (y + 1)] == true) && (O != y + 1) && (O != x - 1)) { h = iO; OnGoe(); }
     }
-    
     // [REVERSAL SIGNAL TRIGGERING: BULLISH DIRECTION (OnToe())]
     if(W != x - 1) {
         if((W != y + 1) && (l[iW - (y + 1)] == true)) { h = iW; OnToe(); }
@@ -14933,15 +14935,13 @@ void OnTick() {
         else if((l[io - (y + 1)] == true) && (o != y + 1) && (o != x - 1)) { h = io; OnToe(); }
         else if((l[iO - (y + 1)] == true) && (O != y + 1) && (O != x - 1)) { h = iO; OnToe(); }
     }
-    
     // [SELF-EVOLUTION PROTOCOL: REINITIALIZATION ON COHERENCE RESTORATION]
     if(GF == true) { OnReInit(); GF = false; }
-    
     // [STATE VISUALIZATION: REAL-TIME DIAGNOSTIC OUTPUT]
-    Comment(" ^", iZ, ":", Z, "\|", iz, ":", z, "=", k[Z - (y + 1)], "\|", k[z - (y + 1)], " Up(0)|Down(1): ", mem,
+    Comment(" ^", iZ, ":", Z, "|", iz, ":", z, "=", k[Z - (y + 1)], "|", k[z - (y + 1)], " Up(0)|Down(1): ", mem,
     "\n Lim", iO, ":", O, "^", k[O - (y + 1)], "_", l[O - (y + 1)], ".", io, ":", o, "^", k[o - (y + 1)], "_", l[o - (y + 1)], "=", h, ".", C, ":", c,
-    "\n _", iW, ":", W, "\|", iw, ":", w, "=", l[W - (y + 1)], "\|", l[w - (y + 1)], " 💎 ");
-}// Natalia Tanyatia
+    "\n _", iW, ":", W, "|", iw, ":", w, "=", l[W - (y + 1)], "|", l[w - (y + 1)], " 💎 ");
+    }// Natalia Tanyatia
 ```
 
 ## 11. Final Closing & Assertion
