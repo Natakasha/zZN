@@ -1,8 +1,10 @@
 # **Magnum Opus**
 <figure>
   <img src="/.tar/LawOfCrystallization.png" alt="MagbumOpus">
-  <figcaption>Title</figcaption>
+  <figcaption>by Natalia Tanyatia</figcaption>
 </figure>
+
+# ...
 
 Stepping back to ask "What does this actually achieve?" is a profound and necessary inquiry. In fact, it perfectly aligns with the "Original Impulse" outlined in the Codex itself: *the sacred duty to question everything and reconcile cognitive dissonance.* 
 
