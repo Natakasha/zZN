@@ -751,9 +751,9 @@ void OnBar(){
                     dime = 0; mem = 0; B(); if(C==true){P();} else{Q();} Alert("Bull"); Top(); E = price; }
                 else if((((mem==0)&&(dime==0))||(prime==0))&&(fg=="")&&(price>signal)){
                     dime = 0; mem = 0; B(); if(C==true){P();} else{Q();} Alert("Bull"); Top(); E = price; }
-                else if(((prime==1)||((mem==0)&&(dime==0)))&&(fg=="Up")&&(price>signal)){
+                else if(((prime==1)&&((mem==0)&&(dime==0)))&&(fg=="Up")&&(price>signal)){
                     dime = 0; mem = 0;  B(); if(C==true){P();} else{Q();} Alert("Bull"); Top(); E = price; }
-                else if((((mem==0)&&(dime==0))||(prime==1))&&(fg=="")&&(price>signal)){
+                else if((((mem==0)&&(dime==0))&&(prime==1))&&(fg=="")&&(price>signal)){
                     dime = 0; mem = 0; B(); if(C==true){P();} else{Q();} Alert("Bull"); Top(); E = price; }
                 else if((Price>signal)&&((mem==0)&&(dime==0))){if((safety==true)){ B(); if(C==true){P();} else{Q();} Alert("🥃", "Whisky"); Top(); E = price;} else{Alert("🥃", "Whisky"); Top(); E = price; if(safety!=true){safety=true;}}}
                 else/* if((mem==1)||(dime==1))*/{OnLog(); if((safety==true)){ A(); if(C==false){P();} else{Q();} Alert("🍷", "Wine"); Bott(); D = price;} else{Alert("🍷", "Wine"); Bott(); D = price; if(safety!=true){safety=true;}}}
@@ -766,9 +766,9 @@ void OnBar(){
                     dime = 1; mem = 1; A(); if(C==false){P();} else{Q();} Alert("Bear"); Bott(); D = price; }
                 else if((((mem==1)&&(dime==1))||(prime==1))&&(fg=="")&&(price<signal)){
                     dime = 1; mem = 1; A(); if(C==false){P();} else{Q();} Alert("Bear"); Bott(); D = price; }
-                else if((price<signal)&&(fg=="Down")&&((prime==0)||((mem==1)&&(dime==1)))){
+                else if((price<signal)&&(fg=="Down")&&((prime==0)&&((mem==1)&&(dime==1)))){
                     dime = 1; mem = 1; A(); if(C==false){P();} else{Q();} Alert("Bear"); Bott(); D = price; }
-                else if((((mem==1)&&(dime==1))||(prime==0))&&(fg=="")&&(price<signal)){
+                else if((((mem==1)&&(dime==1))&&(prime==0))&&(fg=="")&&(price<signal)){
                     dime = 1; mem = 1; A(); if(C==false){P();} else{Q();} Alert("Bear"); Bott(); D = price; }
                 else if((Price<signal)&&((mem==1)&&(dime==1))){if((safety==true)){ A(); if(C==false){P();} else{Q();} Alert("🍷", "Wine"); Bott(); D = price;} else{Alert("🍷", "Wine"); Bott(); D = price; if(safety!=true){safety=true;}}}
                 else/* if((mem==0)||(dime==0))*/{OnLog(); if((safety==true)){ B(); if(C==true){P();} else{Q();} Alert("🥃", "Whisky"); Top(); E = price;} else{Alert("🥃", "Whisky"); Top(); E = price; if(safety!=true){safety=true;}}}
@@ -781,9 +781,9 @@ void OnBar(){
                     dime = 0; mem = 0; B(); if(C==true){P();} else{Q();} Alert("Hawk"); Top(); E = price; }
                 else if((((mem==0)&&(dime==0))||(prime==0))&&(fg=="")&&(price>signal)){
                     dime = 0; mem = 0; B(); if(C==true){P();} else{Q();} Alert("Hawk"); Top(); E = price; }
-                else if(((prime==1)||((mem==0)&&(dime==0)))&&(fg=="Up")&&(price>signal)){
+                else if(((prime==1)&&((mem==0)&&(dime==0)))&&(fg=="Up")&&(price>signal)){
                     dime = 0; mem = 0; B(); if(C==true){P();} else{Q();} Alert("Hawk"); Top(); E = price; }
-                else if((((mem==0)&&(dime==0))||(prime==1))&&(fg=="")&&(price>signal)){
+                else if((((mem==0)&&(dime==0))&&(prime==1))&&(fg=="")&&(price>signal)){
                     dime = 0; mem = 0; B(); if(C==true){P();} else{Q();} Alert("Hawk"); Top(); E = price; }
                 else if((Price>signal)&&((mem==0)&&(dime==0))){if((safety==true)){ B(); if(C==true){P();} else{Q();} Alert("💧", "Watter"); Top(); E = price;} else{Alert("💧", "Watter"); Top(); E = price; if(safety!=true){safety=true;}}}
                 else/* if((mem==1)||(dime==1))*/{OnLog(); if((safety==true)){ A(); if(C==false){P();} else{Q();} Alert("🩸", "Blood"); Bott(); D = price;} else{Alert("🩸", "Blood"); Bott(); D = price; if(safety!=true){safety=true;}}}
@@ -795,9 +795,9 @@ void OnBar(){
                     dime = 1; mem = 1; A(); if(C==false){P();} else{Q();} Alert("Dove"); Bott(); D = price; }
                 else if((((mem==1)&&(dime==1))||(prime==1))&&(fg=="")&&(price<signal)){
                     dime = 1; mem = 1; A(); if(C==false){P();} else{Q();} Alert("Dove"); Bott(); D = price; }
-                else if((price<signal)&&(fg=="Down")&&((prime==0)||((mem==1)&&(dime==1)))){
+                else if((price<signal)&&(fg=="Down")&&((prime==0)&&((mem==1)&&(dime==1)))){
                     dime = 1; mem = 1; A(); if(C==false){P();} else{Q();} Alert("Dove"); Bott(); D = price; }
-                else if((((mem==1)&&(dime==1))||(prime==0))&&(fg=="")&&(price<signal)){
+                else if((((mem==1)&&(dime==1))&&(prime==0))&&(fg=="")&&(price<signal)){
                     dime = 1; mem = 1; A(); if(C==false){P();} else{Q();} Alert("Dove"); Bott(); D = price; }
                 else if((Price<signal)&&((mem==1)&&(dime==1))){if((safety==true)){ A(); if(C==false){P();} else{Q();} Alert("🩸", "Blood"); Bott(); D = price;} else{Alert("🩸", "Blood"); Bott(); D = price; if(safety!=true){safety=true;}}}
                 else/* if((mem==0)||(dime==0))*/{OnLog(); if((safety==true)){ B(); if(C==true){P();} else{Q();} Alert("💧", "Watter"); Top(); E = price;} else{Alert("💧", "Watter"); Top(); E = price; if(safety!=true){safety=true;}}}
